@@ -27,6 +27,10 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
+    const directProduct =
+      typeof body.product === "string" && body.product.trim()
+        ? body.product.trim()
+        : null;
     const total = typeof body.total === "number" ? body.total : null;
     const paymentMethod =
       typeof body.payment_method === "string" && body.payment_method.trim()
@@ -71,7 +75,7 @@ export async function POST(req: Request) {
     }
 
     const orderId = `PND-${nextNumber}`;
-    const productSummary = buildProductSummary(items);
+    const productSummary = buildProductSummary(items) || directProduct;
     const fullNotes = [notes, total !== null ? `Total: $${total.toFixed(2)}` : null]
       .filter(Boolean)
       .join(" | ") || null;
@@ -146,6 +150,18 @@ export async function PATCH(req: Request) {
 
     if (typeof body.status === "string") {
       updates.status = body.status.trim() || "pending";
+    }
+
+    if (typeof body.product === "string") {
+      updates.product = body.product.trim() || null;
+    }
+
+    if (typeof body.vouched_by === "string") {
+      updates.vouched_by = body.vouched_by.trim() || null;
+    }
+
+    if (typeof body.vouch_note === "string") {
+      updates.vouch_note = body.vouch_note.trim() || null;
     }
 
     if (typeof body.notes === "string") {
