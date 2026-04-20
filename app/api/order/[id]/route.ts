@@ -206,3 +206,64 @@ export async function PATCH(req: Request) {
     );
   }
 }
+
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const orderId = typeof id === "string" ? id.trim() : "";
+
+    if (!orderId) {
+      return Response.json(
+        {
+          success: false,
+          error: "order id is required",
+        },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("orders")
+      .select("*")
+      .eq("order_id", orderId)
+      .maybeSingle();
+
+    if (error) {
+      console.error("Failed to fetch order:", error);
+      return Response.json(
+        {
+          success: false,
+          error: "failed to fetch order",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!data) {
+      return Response.json(
+        {
+          success: false,
+          error: "order not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      order: data,
+    });
+  } catch (error) {
+    console.error("Order fetch failed:", error);
+    return Response.json(
+      {
+        success: false,
+        error: "internal server error",
+      },
+      { status: 500 }
+    );
+  }
+}
