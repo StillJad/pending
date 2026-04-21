@@ -30,6 +30,10 @@ export async function POST(req: Request) {
     const body = await req.json();
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
+    const directProduct =
+      typeof body.product === "string" && body.product.trim()
+        ? body.product.trim()
+        : null;
     const total = typeof body.total === "number" ? body.total : null;
     const paymentMethod =
       typeof body.payment_method === "string" && body.payment_method.trim()
@@ -84,7 +88,7 @@ export async function POST(req: Request) {
     }
 
     const orderId = `PND-${nextNumber}`;
-    const productSummary = buildProductSummary(items);
+    const productSummary = buildProductSummary(items) || directProduct;
     const fullNotes = [notes, total !== null ? `Total: $${total.toFixed(2)}` : null]
       .filter(Boolean)
       .join(" | ") || null;
