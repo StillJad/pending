@@ -34,6 +34,36 @@ const {
 const token = process.env.DISCORD_TOKEN?.trim();
 const prefix = process.env.PREFIX || ",";
 const configPath = path.join(__dirname, "data", "config.json");
+const configBackupPath = path.join(__dirname, "data", "config.backup.json");
+
+const DEFAULT_CONFIG = {
+  autorole: null,
+  adminRoleId: "",
+  logChannelId: "",
+  welcomeChannelId: "",
+  welcomeMessage: "Welcome {user} to {server}!",
+  welcomeTitle: "Welcome to {server}",
+  welcomeThumbnail: "avatar",
+  ticketBlacklist: [],
+  payments: {
+    btc: "",
+    eth: "",
+    ltc: "",
+    usdt: "",
+    sol: "",
+    paypal: "",
+  },
+  statusChannelId: "",
+  statusMessageId: "",
+  trackedStatusUserIds: [],
+  vouchChannelId: "",
+  deliveryChannelId: "",
+  saleChannelId: "",
+  robuxPricePer1000: 8.5,
+  usedDeliveryIdentities: [],
+  embedColor: 15548997,
+  userOrderHistory: {},
+};
 const sellersRoleId = process.env.DISCORD_SELLERS_ROLE_ID || "";
 const ticketCategoryId = process.env.DISCORD_TICKET_CATEGORY_ID || "";
 const ticketLogChannelId = process.env.DISCORD_TICKET_LOG_CHANNEL_ID || "";
@@ -45,150 +75,112 @@ function ensureConfigFile() {
   }
 
   if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(
-      configPath,
-      JSON.stringify(
-        {
-          autorole: null,
-          adminRoleId: "",
-          logChannelId: "",
-          welcomeChannelId: "",
-          welcomeMessage: "Welcome {user} to {server}!",
-          welcomeTitle: "Welcome to {server}",
-          welcomeThumbnail: "avatar", // or "none"
-          ticketBlacklist: [],
-          payments: {
-            btc: "",
-            eth: "",
-            ltc: "",
-            usdt: "",
-            sol: "",
-            paypal: "",
-          },
-          statusChannelId: "",
-          statusMessageId: "",
-          trackedStatusUserIds: [],
-          vouchChannelId: "",
-          deliveryChannelId: "",
-          saleChannelId: "",
-          robuxPricePer1000: 8.5,
-          usedDeliveryIdentities: [],
-          embedColor: 15548997,
-          userOrderHistory: {},
-        },
-        null,
-        2
-      )
-    );
+    fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
   }
+
+  if (!fs.existsSync(configBackupPath)) {
+    try {
+      fs.copyFileSync(configPath, configBackupPath);
+    } catch {}
+  }
+}
+
+function sanitizeConfig(data = {}) {
+  const sanitized = {
+    ...DEFAULT_CONFIG,
+    ...(data && typeof data === "object" ? data : {}),
+    payments: {
+      ...DEFAULT_CONFIG.payments,
+      ...((data && data.payments) || {}),
+    },
+  };
+
+  if (!Array.isArray(sanitized.ticketBlacklist)) sanitized.ticketBlacklist = [];
+  if (!Array.isArray(sanitized.trackedStatusUserIds)) sanitized.trackedStatusUserIds = [];
+  if (!Array.isArray(sanitized.usedDeliveryIdentities)) sanitized.usedDeliveryIdentities = [];
+  if (!sanitized.userOrderHistory || typeof sanitized.userOrderHistory !== "object") {
+    sanitized.userOrderHistory = {};
+  }
+
+  if (typeof sanitized.autorole === "undefined") sanitized.autorole = null;
+  if (typeof sanitized.adminRoleId !== "string") sanitized.adminRoleId = "";
+  if (typeof sanitized.logChannelId !== "string") sanitized.logChannelId = "";
+  if (typeof sanitized.welcomeChannelId !== "string") sanitized.welcomeChannelId = "";
+  if (typeof sanitized.welcomeMessage !== "string") sanitized.welcomeMessage = DEFAULT_CONFIG.welcomeMessage;
+  if (typeof sanitized.welcomeTitle !== "string") sanitized.welcomeTitle = DEFAULT_CONFIG.welcomeTitle;
+  if (typeof sanitized.welcomeThumbnail !== "string") sanitized.welcomeThumbnail = DEFAULT_CONFIG.welcomeThumbnail;
+  if (typeof sanitized.statusChannelId !== "string") sanitized.statusChannelId = "";
+  if (typeof sanitized.statusMessageId !== "string") sanitized.statusMessageId = "";
+  if (typeof sanitized.vouchChannelId !== "string") sanitized.vouchChannelId = "";
+  if (typeof sanitized.deliveryChannelId !== "string") sanitized.deliveryChannelId = "";
+  if (typeof sanitized.saleChannelId !== "string") sanitized.saleChannelId = "";
+  if (typeof sanitized.robuxPricePer1000 !== "number" || !Number.isFinite(sanitized.robuxPricePer1000)) {
+    sanitized.robuxPricePer1000 = DEFAULT_CONFIG.robuxPricePer1000;
+  }
+  if (typeof sanitized.embedColor !== "number") sanitized.embedColor = DEFAULT_CONFIG.embedColor;
+
+  ensureUserOrderHistory(sanitized);
+  return sanitized;
+}
+
+function readConfigFile(targetPath) {
+  const raw = fs.readFileSync(targetPath, "utf8");
+  return sanitizeConfig(JSON.parse(raw));
 }
 
 function getConfig() {
   ensureConfigFile();
-  const data = JSON.parse(fs.readFileSync(configPath, "utf8"));
 
-  if (!Array.isArray(data.ticketBlacklist)) {
-    data.ticketBlacklist = [];
+  try {
+    return readConfigFile(configPath);
+  } catch (error) {
+    console.error("Failed to read config.json, attempting backup:", error);
+
+    try {
+      const backup = readConfigFile(configBackupPath);
+      fs.writeFileSync(configPath, JSON.stringify(backup, null, 2));
+      return backup;
+    } catch (backupError) {
+      console.error("Failed to read config backup, rebuilding defaults:", backupError);
+      fs.writeFileSync(configPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+      fs.writeFileSync(configBackupPath, JSON.stringify(DEFAULT_CONFIG, null, 2));
+      return sanitizeConfig(DEFAULT_CONFIG);
+    }
   }
-
-  if (!data.payments || typeof data.payments !== "object") {
-    data.payments = {
-      btc: "",
-      eth: "",
-      ltc: "",
-      usdt: "",
-      sol: "",
-      paypal: "",
-    };
-  }
-
-  if (typeof data.autorole === "undefined") {
-    data.autorole = null;
-  }
-
-  if (typeof data.adminRoleId !== "string") {
-  data.adminRoleId = "";
-}
-
-if (typeof data.logChannelId !== "string") {
-  data.logChannelId = "";
-}
-  
-  if (typeof data.welcomeChannelId !== "string") {
-  data.welcomeChannelId = "";
-}
-
-if (typeof data.welcomeMessage !== "string") {
-  data.welcomeMessage = "Welcome {user} to {server}!";
-}
-  if (typeof data.statusChannelId !== "string") {
-    data.statusChannelId = "";
-  }
-
-  if (typeof data.statusMessageId !== "string") {
-    data.statusMessageId = "";
-  }
-
-  if (!Array.isArray(data.trackedStatusUserIds)) {
-    data.trackedStatusUserIds = [];
-  }
-
-if (typeof data.vouchChannelId !== "string") {
-  data.vouchChannelId = "";
-}
-
-if (typeof data.deliveryChannelId !== "string") {
-  data.deliveryChannelId = "";
-}
-
-if (typeof data.saleChannelId !== "string") {
-  data.saleChannelId = "";
-}
-
-if (typeof data.robuxPricePer1000 !== "number" || !Number.isFinite(data.robuxPricePer1000)) {
-  data.robuxPricePer1000 = 8.5;
-}
-
-if (!Array.isArray(data.usedDeliveryIdentities)) {
-  data.usedDeliveryIdentities = [];
-}
-
-if (typeof data.embedColor !== "number") {
-  data.embedColor = 15548997;
-}
-
-ensureUserOrderHistory(data);
-
-if (typeof data.welcomeTitle !== "string") {
-  data.welcomeTitle = "Welcome to {server}";
-}
-
-if (typeof data.welcomeThumbnail !== "string") {
-  data.welcomeThumbnail = "avatar";
-}
-  return data;
 }
 
 function saveConfig(data) {
   ensureConfigFile();
 
-  let current = {};
-  try {
-    current = JSON.parse(fs.readFileSync(configPath, "utf8"));
-  } catch {
-    current = {};
-  }
+  const current = getConfig();
+  const incoming = sanitizeConfig(data || {});
 
-  const merged = {
+  const merged = sanitizeConfig({
     ...current,
-    ...data,
+    ...incoming,
     payments: {
-      ...(current.payments || {}),
-      ...(data?.payments || {}),
+      ...current.payments,
+      ...incoming.payments,
     },
-  };
+    userOrderHistory: {
+      ...(current.userOrderHistory || {}),
+      ...(incoming.userOrderHistory || {}),
+    },
+    ticketBlacklist: Array.isArray(incoming.ticketBlacklist)
+      ? incoming.ticketBlacklist
+      : current.ticketBlacklist,
+    trackedStatusUserIds: Array.isArray(incoming.trackedStatusUserIds)
+      ? incoming.trackedStatusUserIds
+      : current.trackedStatusUserIds,
+    usedDeliveryIdentities: Array.isArray(incoming.usedDeliveryIdentities)
+      ? incoming.usedDeliveryIdentities
+      : current.usedDeliveryIdentities,
+  });
 
-  fs.writeFileSync(configPath, JSON.stringify(merged, null, 2));
+  const tempPath = `${configPath}.tmp`;
+  fs.writeFileSync(tempPath, JSON.stringify(merged, null, 2));
+  fs.renameSync(tempPath, configPath);
+  fs.writeFileSync(configBackupPath, JSON.stringify(merged, null, 2));
 }
 
 function normalizeLinkedTargetId(value) {
@@ -2027,7 +2019,6 @@ if (rawCommandName === "ticketrename") {
     const config = client.getConfig();
     if (!config.trackedStatusUserIds.includes(member.id)) {
       config.trackedStatusUserIds.push(member.id);
-      client.saveConfig(config);
     }
 
     client.saveConfig(config);
@@ -2041,8 +2032,6 @@ if (rawCommandName === "ticketrename") {
 
     const config = client.getConfig();
     config.trackedStatusUserIds = config.trackedStatusUserIds.filter((id) => id !== member.id);
-    client.saveConfig(config);
-
     client.saveConfig(config);
     await updateStatusMessage(message.guild);
     return message.reply(`${member} removed from status tracking`);
