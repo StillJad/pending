@@ -16,10 +16,12 @@ export default function ProductsPage() {
   });
 
   return (
-    <main className="min-h-screen bg-black px-6 py-10 text-white">
-      <div className="mx-auto max-w-5xl">
-        <h1 className="text-4xl font-bold">Products</h1>
-        <p className="mt-3 text-white/70">
+    <main className="text-white">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
+          Buy
+        </h1>
+        <p className="mt-4 text-white/60">
           Browse categories to view products and services.
         </p>
 
@@ -28,12 +30,21 @@ export default function ProductsPage() {
             <Link
               key={category.slug}
               href={`/products/${category.slug}`}
-              className="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:bg-white/10"
+              className="group rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur transition hover:scale-[1.03] hover:bg-white/10 hover:shadow-[0_0_30px_rgba(120,119,198,0.15)]"
             >
-              <h2 className="text-2xl font-semibold">{category.name}</h2>
-              <p className="mt-3 text-white/70">
+              <h2 className="text-2xl font-semibold transition group-hover:text-purple-300">
+                {category.name}
+              </h2>
+              <p className="mt-3 text-white/60">
                 {category.count} product{category.count === 1 ? "" : "s"}
               </p>
+            </Link>
+          ))}
+        </div>
+      </div>
+    </main>
+  );
+}
             </Link>
           ))}
         </div>
