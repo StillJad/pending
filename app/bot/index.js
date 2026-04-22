@@ -171,7 +171,24 @@ if (typeof data.welcomeThumbnail !== "string") {
 
 function saveConfig(data) {
   ensureConfigFile();
-  fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
+
+  let current = {};
+  try {
+    current = JSON.parse(fs.readFileSync(configPath, "utf8"));
+  } catch {
+    current = {};
+  }
+
+  const merged = {
+    ...current,
+    ...data,
+    payments: {
+      ...(current.payments || {}),
+      ...(data?.payments || {}),
+    },
+  };
+
+  fs.writeFileSync(configPath, JSON.stringify(merged, null, 2));
 }
 
 function normalizeLinkedTargetId(value) {
@@ -632,43 +649,66 @@ function getPresenceEmoji(status) {
 
 async function updateStatusMessage(guild) {
   const config = client.getConfig();
-  if (!config.statusChannelId || !config.statusMessageId) return;
+  if (!config.statusChannelId || !config.statusMessageId || !guild) return;
 
-  const channel = guild.channels.cache.get(config.statusChannelId);
+  const channel =
+    guild.channels.cache.get(config.statusChannelId) ||
+    (await guild.channels.fetch(config.statusChannelId).catch(() => null));
+
   if (!channel || !channel.isTextBased()) return;
 
+  let message;
   try {
-    const message = await channel.messages.fetch(config.statusMessageId);
+    message = await channel.messages.fetch(config.statusMessageId);
+  } catch (error) {
+    if (error?.code === 10008) {
+      config.statusMessageId = "";
+      client.saveConfig(config);
+      console.error("Status message no longer exists. Cleared stored statusMessageId.");
+      return;
+    }
 
-    const lines = config.trackedStatusUserIds.map((userId) => {
-      const member = guild.members.cache.get(userId);
-      const status = member?.presence?.status || "offline";
-      const emoji = getPresenceEmoji(status);
-      return `<@${userId}> Status: ${emoji}`;
+    console.error("Failed to fetch status message:", error);
+    return;
+  }
+
+  const fields = [];
+
+  for (const userId of config.trackedStatusUserIds) {
+    const member =
+      guild.members.cache.get(userId) ||
+      (await guild.members.fetch(userId).catch(() => null));
+
+    const status = member?.presence?.status || "offline";
+    const emoji = getPresenceEmoji(status);
+
+    fields.push({
+      name: member?.user?.username || "Unknown",
+      value: `<@${userId}>\nStatus: ${emoji} ${status}`,
+      inline: false,
     });
+  }
 
-   const embed = new EmbedBuilder()
-  .setColor(0x000000)
-  .setTitle("📊 Seller Status")
-  .addFields(
-    config.trackedStatusUserIds.length
-      ? config.trackedStatusUserIds.map((userId) => {
-          const member = guild.members.cache.get(userId);
-          const status = member?.presence?.status || "offline";
-          const emoji = getPresenceEmoji(status);
+  const embed = new EmbedBuilder()
+    .setColor(0x000000)
+    .setTitle("📊 Seller Status")
+    .addFields(
+      fields.length
+        ? fields
+        : [{ name: "No tracked users", value: "Add users with ,statusadd @user", inline: false }]
+    )
+    .setFooter({ text: "/Pending | Pending.cc" });
 
-          return {
-            name: member?.user?.username || "Unknown",
-            value: `<@${userId}>\nStatus: ${emoji} ${status}`,
-            inline: false,
-};
-        })
-      : [{ name: "No tracked users", value: "Add users with ,statusadd @user", inline: false }]
-  )
-  .setFooter({ text: "/Pending | Pending.cc" });
-
+  try {
     await message.edit({ embeds: [embed], content: "" });
   } catch (error) {
+    if (error?.code === 10008) {
+      config.statusMessageId = "";
+      client.saveConfig(config);
+      console.error("Status message disappeared during edit. Cleared stored statusMessageId.");
+      return;
+    }
+
     console.error("Failed to update status message:", error);
   }
 }
@@ -808,7 +848,11 @@ client.on("presenceUpdate", async (_, newPresence) => {
   const config = client.getConfig();
   if (!config.trackedStatusUserIds.includes(newPresence.userId)) return;
 
-  await updateStatusMessage(newPresence.guild);
+  try {
+    await updateStatusMessage(newPresence.guild);
+  } catch (error) {
+    console.error("presenceUpdate status refresh failed:", error);
+  }
 });
 
 client.on("messageReactionAdd", async (reaction, user) => {
@@ -1986,6 +2030,7 @@ if (rawCommandName === "ticketrename") {
       client.saveConfig(config);
     }
 
+    client.saveConfig(config);
     await updateStatusMessage(message.guild);
     return message.reply(`${member} added to status tracking`);
   }
@@ -1998,6 +2043,7 @@ if (rawCommandName === "ticketrename") {
     config.trackedStatusUserIds = config.trackedStatusUserIds.filter((id) => id !== member.id);
     client.saveConfig(config);
 
+    client.saveConfig(config);
     await updateStatusMessage(message.guild);
     return message.reply(`${member} removed from status tracking`);
   }
@@ -2011,34 +2057,29 @@ if (rawCommandName === "ticketrename") {
       return message.reply("invalid status channel");
     }
 
-    const lines = config.trackedStatusUserIds.map((userId) => {
-      const member = message.guild.members.cache.get(userId);
-      const status = member?.presence?.status || "offline";
-      const emoji = getPresenceEmoji(status);
-      return `<@${userId}> Status: ${emoji}`;
+    const statusFields = config.trackedStatusUserIds.length
+      ? config.trackedStatusUserIds.map((userId) => {
+          const member = message.guild.members.cache.get(userId);
+          const status = member?.presence?.status || "offline";
+          const emoji = getPresenceEmoji(status);
+
+          return {
+            name: member?.user?.username || "Unknown",
+            value: `<@${userId}>\nStatus: ${emoji} ${status}`,
+            inline: false,
+          };
+        })
+      : [{ name: "No tracked users", value: "Add users with ,statusadd @user", inline: false }];
+
+    const embed = new EmbedBuilder()
+      .setColor(0x000000)
+      .setTitle("📊 Seller Status")
+      .addFields(statusFields)
+      .setFooter({ text: "/Pending | Pending.cc" });
+
+    const statusMessage = await statusChannel.send({
+      embeds: [embed],
     });
-
-  const embed = new EmbedBuilder()
-  .setColor(0x000000)
-  .setTitle("📊 Seller Status")
-  .addFields(
-    config.trackedStatusUserIds.map((userId) => {
-      const member = message.guild.members.cache.get(userId);
-      const status = member?.presence?.status || "offline";
-      const emoji = getPresenceEmoji(status);
-
-      return {
-         name: member?.user?.username || "Unknown",
-          value: `<@${userId}>\nStatus: ${emoji} ${status}`,
-           inline: false,
-    };
-    })
-  )
-  .setFooter({ text: "/Pending | Pending.cc" });
-
-const statusMessage = await statusChannel.send({
-  embeds: [embed],
-});
 
     config.statusMessageId = statusMessage.id;
     client.saveConfig(config);
