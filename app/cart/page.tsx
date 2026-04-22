@@ -25,27 +25,27 @@ export default function CartPage() {
   }, [cartItems]);
 
   return (
-    <main className="min-h-screen bg-black px-6 py-10 text-white">
-      <div className="mx-auto max-w-6xl">
-        <h1 className="text-4xl font-bold">Cart</h1>
-        <p className="mt-3 text-white/70">
+    <main className="text-white">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">Cart</h1>
+        <p className="mt-4 text-white/60">
           Review your selected products before placing your Discord order.
         </p>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.5fr_420px]">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-2xl font-semibold">Items</h2>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h2 className="text-2xl font-semibold text-purple-300">Items</h2>
 
             <div className="mt-6 space-y-4">
               {cartItems.length === 0 ? (
-                <div className="rounded-xl border border-white/10 bg-black/20 p-4 text-white/60">
+                <div className="rounded-xl border border-white/10 bg-black/30 backdrop-blur p-4 text-white/60">
                   Your cart is empty.
                 </div>
               ) : (
                 cartItems.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-xl border border-white/10 bg-black/20 p-4"
+                    className="rounded-xl border border-white/10 bg-black/30 backdrop-blur p-4"
                   >
                     <div className="flex items-center justify-between gap-4">
                       <div>
@@ -59,7 +59,7 @@ export default function CartPage() {
                         <p className="text-sm text-white/50">
                           Qty: {item.quantity}
                         </p>
-                        <p className="mt-1 font-semibold">
+                        <p className="mt-1 font-semibold text-purple-300">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
                       </div>
@@ -70,8 +70,8 @@ export default function CartPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-2xl font-semibold">Summary</h2>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h2 className="text-2xl font-semibold text-purple-300">Summary</h2>
 
             <div className="mt-6 flex items-center justify-between text-white/80">
               <span>Items</span>
@@ -86,7 +86,7 @@ export default function CartPage() {
             <div className="mt-6 border-t border-white/10 pt-6">
               <div className="flex items-center justify-between text-xl font-semibold">
                 <span>Total</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="text-purple-300">${subtotal.toFixed(2)}</span>
               </div>
             </div>
 
@@ -125,7 +125,7 @@ export default function CartPage() {
 
                 window.open("https://discord.gg/YOUR_INVITE", "_blank");
               }}
-              className="mt-8 w-full rounded-xl bg-white px-4 py-3 font-semibold text-black transition hover:opacity-80 disabled:opacity-50"
+              className="mt-8 w-full rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-3 font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
               disabled={cartItems.length === 0}
             >
               Place Order
