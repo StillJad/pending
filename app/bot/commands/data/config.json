@@ -1,0 +1,25 @@
+{
+  "autorole": "1407717089841778728",
+  "payments": {
+    "btc": "243443",
+    "eth": "",
+    "ltc": "",
+    "usdt": "",
+    "sol": "",
+    "paypal": ""
+  },
+  "ticketBlacklist": [],
+  "statusChannelId": "1495226553389416468",
+  "statusMessageId": "1495233170168348834",
+  "trackedStatusUserIds": [
+    "240308439950163969",
+    "1474787629345149039"
+  ],
+  "vouchChannelId": "1495015246916616203",
+  "welcomeChannelId": "1492245267678761000",
+  "welcomeMessage": "Yo {user} Welcome to Pending Store !\n\nWe are now at {membercount} Members <:250885giveaway:1495229338671382690>\n\nMake sure to check these out <:SGear_mlm:1495233123179565256>\n\n<:SGear_mlm:1495233123179565256> Rules: <#1403425018016174100> \n\n<:verified_mlm:1495216740286599178> Vouches & Proofs: <#1491834863739863111> & <#1495015246916616203> \n\n<:MLM_BlackGlobe:1495235083462770838> Website: SOON",
+  "welcomeTitle": "Welcome to {server}",
+  "welcomeThumbnail": "avatar",
+
+  "giveaways": {}
+}

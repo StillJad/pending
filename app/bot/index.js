@@ -1,8 +1,15 @@
 require("dotenv").config();
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION:", err);
+});
 
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
 const {
   Client,
   GatewayIntentBits,
+  Partials,
   Collection,
   ActionRowBuilder,
   ButtonBuilder,
@@ -18,6 +25,11 @@ const {
 
 const fs = require("fs");
 const path = require("path");
+const database = require("./lib/database");
+const {
+  getMessageFromLink,
+  getRepliedMessage,
+} = require("./lib/utils/messages");
 
 const token = process.env.DISCORD_TOKEN?.trim();
 const prefix = process.env.PREFIX || ",";
@@ -38,6 +50,8 @@ function ensureConfigFile() {
       JSON.stringify(
         {
           autorole: null,
+          adminRoleId: "",
+          logChannelId: "",
           welcomeChannelId: "",
           welcomeMessage: "Welcome {user} to {server}!",
           welcomeTitle: "Welcome to {server}",
@@ -51,10 +65,16 @@ function ensureConfigFile() {
             sol: "",
             paypal: "",
           },
-        statusChannelId: "",
-        statusMessageId: "",
-        trackedStatusUserIds: [],
-        vouchChannelId: "",
+          statusChannelId: "",
+          statusMessageId: "",
+          trackedStatusUserIds: [],
+          vouchChannelId: "",
+          deliveryChannelId: "",
+          saleChannelId: "",
+          robuxPricePer1000: 8.5,
+          usedDeliveryIdentities: [],
+          embedColor: 15548997,
+          userOrderHistory: {},
         },
         null,
         2
@@ -85,6 +105,14 @@ function getConfig() {
   if (typeof data.autorole === "undefined") {
     data.autorole = null;
   }
+
+  if (typeof data.adminRoleId !== "string") {
+  data.adminRoleId = "";
+}
+
+if (typeof data.logChannelId !== "string") {
+  data.logChannelId = "";
+}
   
   if (typeof data.welcomeChannelId !== "string") {
   data.welcomeChannelId = "";
@@ -109,6 +137,28 @@ if (typeof data.vouchChannelId !== "string") {
   data.vouchChannelId = "";
 }
 
+if (typeof data.deliveryChannelId !== "string") {
+  data.deliveryChannelId = "";
+}
+
+if (typeof data.saleChannelId !== "string") {
+  data.saleChannelId = "";
+}
+
+if (typeof data.robuxPricePer1000 !== "number" || !Number.isFinite(data.robuxPricePer1000)) {
+  data.robuxPricePer1000 = 8.5;
+}
+
+if (!Array.isArray(data.usedDeliveryIdentities)) {
+  data.usedDeliveryIdentities = [];
+}
+
+if (typeof data.embedColor !== "number") {
+  data.embedColor = 15548997;
+}
+
+ensureUserOrderHistory(data);
+
 if (typeof data.welcomeTitle !== "string") {
   data.welcomeTitle = "Welcome to {server}";
 }
@@ -122,6 +172,120 @@ if (typeof data.welcomeThumbnail !== "string") {
 function saveConfig(data) {
   ensureConfigFile();
   fs.writeFileSync(configPath, JSON.stringify(data, null, 2));
+}
+
+function normalizeLinkedTargetId(value) {
+  return String(value || "").trim();
+}
+
+function getDeliveryClaimInfoFromEmbed(embed) {
+  if (!embed?.fields?.length) return null;
+
+  const emailField = embed.fields.find((f) => f.name === "Email");
+  const passwordField = embed.fields.find((f) => f.name === "Password");
+  const serviceField = embed.fields.find((f) => f.name === "Service");
+  const claimedByField = embed.fields.find((f) => f.name === "Claimed by");
+  const deliveredByField = embed.fields.find((f) => f.name === "Delivered by");
+
+  return {
+    service: serviceField?.value || "Unknown",
+    email: emailField?.value ? String(emailField.value).replace(/`/g, "") : "Unknown",
+    password: passwordField?.value ? String(passwordField.value).replace(/`/g, "") : "Unknown",
+    claimedBy: claimedByField?.value || "Unclaimed",
+    deliveredBy: deliveredByField?.value || "Not delivered",
+    title: embed.title || "Account Delivery",
+  };
+}
+
+function ensureUserOrderHistory(config) {
+  if (!config.userOrderHistory || typeof config.userOrderHistory !== "object") {
+    config.userOrderHistory = {};
+  }
+}
+
+function addUserOrderHistoryEntry(userId, entry) {
+  const config = getConfig();
+  ensureUserOrderHistory(config);
+
+  if (!Array.isArray(config.userOrderHistory[userId])) {
+    config.userOrderHistory[userId] = [];
+  }
+
+  const targetId = String(entry.targetId || "").trim();
+  const email = String(entry.email || "").trim().toLowerCase();
+  const exists = config.userOrderHistory[userId].some(
+    (item) =>
+      String(item.targetId || "").trim() === targetId &&
+      String(item.email || "").trim().toLowerCase() === email
+  );
+
+  if (!exists) {
+    config.userOrderHistory[userId].push({
+      ...entry,
+      linkedAt: Date.now(),
+    });
+    saveConfig(config);
+  }
+}
+
+function getUserOrderHistory(userId) {
+  const config = getConfig();
+  ensureUserOrderHistory(config);
+  return Array.isArray(config.userOrderHistory[userId])
+    ? config.userOrderHistory[userId]
+    : [];
+}
+
+function getUsedDeliveryIdentities() {
+  const config = getConfig();
+  if (!Array.isArray(config.usedDeliveryIdentities)) {
+    config.usedDeliveryIdentities = [];
+  }
+  return new Set(config.usedDeliveryIdentities.map((x) => String(x).trim().toLowerCase()));
+}
+
+function addUsedDeliveryIdentity(identity) {
+  const normalized = String(identity || "").trim().toLowerCase();
+  if (!normalized) return;
+
+  const config = getConfig();
+  if (!Array.isArray(config.usedDeliveryIdentities)) {
+    config.usedDeliveryIdentities = [];
+  }
+
+  if (!config.usedDeliveryIdentities.includes(normalized)) {
+    config.usedDeliveryIdentities.push(normalized);
+    saveConfig(config);
+  }
+}
+
+function getGiveaways() {
+  const giveawaysPath = path.join(__dirname, "data", "giveaways.json");
+  const dir = path.dirname(giveawaysPath);
+
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  if (!fs.existsSync(giveawaysPath)) {
+    fs.writeFileSync(giveawaysPath, JSON.stringify([], null, 2));
+    return [];
+  }
+
+  return JSON.parse(fs.readFileSync(giveawaysPath, "utf8"));
+}
+
+function findGiveawayById(id) {
+  const normalizedId = normalizeLinkedTargetId(id);
+  if (!normalizedId) return null;
+
+  const giveaways = getGiveaways();
+  return giveaways.find(
+    (g) =>
+      g.giveawayId === normalizedId ||
+      g.messageId === normalizedId ||
+      g.messageId === normalizedId.replace("GW-", "")
+  ) || null;
 }
 
 async function generateOrderId() {
@@ -181,16 +345,77 @@ function buildVouchApprovalButtons(requestId) {
 }
 
 function isStaff(member) {
+  const config = getConfig();
+  const effectiveAdminRoleId = config.adminRoleId || sellersRoleId;
+
   return (
     member.permissions.has(PermissionFlagsBits.Administrator) ||
-    (sellersRoleId && member.roles.cache.has(sellersRoleId))
+    (effectiveAdminRoleId && member.roles.cache.has(effectiveAdminRoleId))
   );
 }
 
-async function logTicketEvent(guild, message) {
-  if (!ticketLogChannelId) return;
+async function createManualOrderTicket(guild, user, orderId, product, total, paymentMethod) {
+  const existingChannel = guild.channels.cache.find(
+    (channel) =>
+      channel.type === ChannelType.GuildText &&
+      channel.name.startsWith("ticket-") &&
+      (channel.topic || "").includes(`opener:${user.id}`)
+  );
 
-  const channel = guild.channels.cache.get(ticketLogChannelId);
+  if (existingChannel) {
+    return existingChannel;
+  }
+
+  const permissionOverwrites = [
+    {
+      id: guild.id,
+      deny: [PermissionFlagsBits.ViewChannel],
+    },
+    {
+      id: user.id,
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.ReadMessageHistory,
+      ],
+    },
+  ];
+
+  if (sellersRoleId) {
+    permissionOverwrites.push({
+      id: sellersRoleId,
+      allow: [
+        PermissionFlagsBits.ViewChannel,
+        PermissionFlagsBits.SendMessages,
+        PermissionFlagsBits.ReadMessageHistory,
+      ],
+    });
+  }
+
+  const channel = await guild.channels.create({
+    name: normalizeTicketChannelName(user.username),
+    type: ChannelType.GuildText,
+    parent: ticketCategoryId || null,
+    permissionOverwrites,
+    topic: `opener:${user.id} | order:${orderId} | status:pending`,
+  });
+
+  const sellersMention = sellersRoleId ? `<@&${sellersRoleId}>` : "";
+  const paymentText = paymentMethod || "not set";
+
+  await channel.send(
+    `${sellersMention ? `${sellersMention}\n` : ""}manual order ticket created for ${user}\norder id: \`${orderId}\`\nproduct: **${product}**\ntotal: **${total}**\npayment: **${paymentText}**`
+  );
+
+  return channel;
+}
+
+async function logTicketEvent(guild, message) {
+  const config = getConfig();
+  const effectiveLogChannelId = config.logChannelId || ticketLogChannelId;
+  if (!effectiveLogChannelId) return;
+
+  const channel = guild.channels.cache.get(effectiveLogChannelId);
   if (!channel || !channel.isTextBased()) return;
 
   try {
@@ -450,14 +675,17 @@ async function updateStatusMessage(guild) {
 ensureConfigFile();
 const pendingVouchApprovals = new Map();
 const pendingProofUploads = new Map();
+const handledPrefixMessageIds = new Set();
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildPresences,
   ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
 });
 
 const commands = new Collection();
@@ -465,20 +693,67 @@ client.commands = commands;
 client.getConfig = getConfig;
 client.saveConfig = saveConfig;
 client.generateOrderId = generateOrderId;
+client.isStaff = (member, guildLike = null) => isStaff(member, guildLike || member?.guild);
+client.normalizeLinkedTargetId = normalizeLinkedTargetId;
+client.findGiveawayById = findGiveawayById;
+client.fetchOrderById = fetchOrderById;
+client.updateOrderById = updateOrderById;
+client.logTicketEvent = logTicketEvent;
+client.getTicketOpenerId = getTicketOpenerId;
+client.getTicketOrderId = getTicketOrderId;
+client.getTicketClaimedId = getTicketClaimedId;
+client.getTicketPriority = getTicketPriority;
+client.getTicketStatus = getTicketStatus;
+client.getTicketNotes = getTicketNotes;
+client.buildTicketTopic = buildTicketTopic;
+client.buildTicketButtons = buildTicketButtons;
+client.updateTicketEmbed = updateTicketEmbed;
+client.buildTranscriptText = buildTranscriptText;
+client.getSafeTranscriptFileName = getSafeTranscriptFileName;
+client.sanitizeChannelSegment = sanitizeChannelSegment;
+client.parseAccountLine = parseAccountLine;
+client.buildDeliveryEmbed = buildDeliveryEmbed;
+client.isDeliveryEmbed = isDeliveryEmbed;
+client.getExistingDeliveryIdentities = getExistingDeliveryIdentities;
+client.getUsedDeliveryIdentities = getUsedDeliveryIdentities;
+client.addUsedDeliveryIdentity = addUsedDeliveryIdentity;
+client.getUserOrderHistory = getUserOrderHistory;
+client.addUserOrderHistoryEntry = addUserOrderHistoryEntry;
+client.updateStatusMessage = updateStatusMessage;
+client.getPresenceEmoji = getPresenceEmoji;
+client.pendingProofUploads = pendingProofUploads;
+client.getMessageFromLink = (link) => getMessageFromLink(client, link);
+client.getRepliedMessage = getRepliedMessage;
 
 const commandsPath = path.join(__dirname, "commands");
-const commandFiles = fs
-  .readdirSync(commandsPath)
-  .filter((file) => file.endsWith(".js"));
 
-for (const file of commandFiles) {
-  const command = require(path.join(commandsPath, file));
-  if (!command?.name || typeof command.execute !== "function") {
-    console.warn(`Skipping invalid command file: ${file}`);
-    continue;
+function loadCommands(dir) {
+  const files = fs.readdirSync(dir);
+
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+
+    if (fs.lstatSync(fullPath).isDirectory()) {
+      loadCommands(fullPath);
+      continue;
+    }
+
+    if (!file.endsWith(".js")) continue;
+
+    const command = require(fullPath);
+    if (!command?.name || typeof command.execute !== "function") {
+      console.warn(`Skipping invalid command file: ${fullPath}`);
+      continue;
+    }
+
+    const relative = path.relative(commandsPath, fullPath);
+    command.__filePath = fullPath;
+    command.__category = relative.split(path.sep)[0] || "other";
+    commands.set(command.name, command);
   }
-  commands.set(command.name, command);
 }
+
+loadCommands(commandsPath);
 
 client.on("guildMemberAdd", async (member) => {
   const config = client.getConfig();
@@ -536,6 +811,246 @@ client.on("presenceUpdate", async (_, newPresence) => {
   await updateStatusMessage(newPresence.guild);
 });
 
+client.on("messageReactionAdd", async (reaction, user) => {
+  try {
+    if (user.bot) return;
+
+    if (reaction.partial) {
+      await reaction.fetch().catch(() => null);
+    }
+
+    const msg = reaction.message;
+    if (!msg || !msg.guild) return;
+
+    const emoji = reaction.emoji.name;
+    if (!["📦", "✅"].includes(emoji)) return;
+    if (!msg.embeds?.length) return;
+
+    const embed = msg.embeds[0];
+    if (!isDeliveryEmbed(embed)) return;
+
+    const member = await msg.guild.members.fetch(user.id).catch(() => null);
+    if (!member || !isStaff(member)) return;
+
+    if (emoji === "📦") {
+      const alreadyClaimed =
+        embed.title.endsWith(" (CLAIMED)") ||
+        embed.title.endsWith(" (DELIVERED)") ||
+        embed.fields?.some((f) => f.name === "Claimed by");
+
+      if (alreadyClaimed) return;
+
+      const baseTitle = embed.title.replace(" (CLAIMED)", "").replace(" (DELIVERED)", "");
+      const updatedEmbed = EmbedBuilder.from(embed)
+        .setTitle(`${baseTitle} (CLAIMED)`)
+        .setFields(
+          ...embed.fields.filter((f) => f.name !== "Status" && f.name !== "Claimed by"),
+          { name: "Status", value: "Claimed", inline: true },
+          { name: "Claimed by", value: `<@${user.id}>`, inline: true }
+        )
+        .setFooter({ text: "Pending | pending.cc" })
+        .setTimestamp();
+
+      await msg.edit({ embeds: [updatedEmbed] });
+      await msg.react("✅").catch(() => {});
+      return;
+    }
+
+    if (emoji === "✅") {
+      const alreadyDelivered = embed.title.endsWith(" (DELIVERED)");
+      if (alreadyDelivered) return;
+
+      const claimedField = embed.fields?.find((f) => f.name === "Claimed by");
+      if (!claimedField) return;
+
+      const baseTitle = embed.title.replace(" (CLAIMED)", "").replace(" (DELIVERED)", "");
+      const updatedEmbed = EmbedBuilder.from(embed)
+        .setTitle(`${baseTitle} (DELIVERED)`)
+        .setFields(
+          ...embed.fields.filter((f) => f.name !== "Status" && f.name !== "Delivered by" && f.name !== "Claimed by"),
+          { name: "Status", value: "Delivered", inline: true },
+          claimedField,
+          { name: "Delivered by", value: `<@${user.id}>`, inline: true }
+        )
+        .setFooter({ text: "Pending | pending.cc" })
+        .setTimestamp();
+
+      await msg.edit({ embeds: [updatedEmbed] });
+    }
+  } catch (error) {
+    console.error("delivery reaction failed:", error);
+  }
+});
+
+client.on("messageDelete", async (message) => {
+  try {
+    if (!message.guild || message.author?.bot) return;
+
+    const payload = {
+      authorId: message.author?.id || "Unknown",
+      content: message.content || "[No content]",
+      attachments: message.attachments.map((att) => att.url) || [],
+      deletedAt: Date.now(),
+    };
+
+    database.setSnipedMessage(message.channel.id, payload);
+  } catch (error) {
+    console.error("messageDelete handler failed:", error);
+  }
+});
+
+client.on("messageReactionRemove", async (reaction, user) => {
+  try {
+    if (!reaction.message.guild || user.bot) return;
+
+    const emoji = reaction.emoji.name || reaction.emoji.id || reaction.emoji.toString();
+    const payload = {
+      emoji,
+      userId: user.id,
+      authorId: reaction.message.author?.id || "Unknown",
+      messageContent: reaction.message.content || "[No content]",
+      removedAt: Date.now(),
+    };
+
+    database.setSnipedReaction(reaction.message.channel.id, payload);
+  } catch (error) {
+    console.error("messageReactionRemove handler failed:", error);
+  }
+});
+
+function parseAccountLine(line) {
+  const parts = line.split("|").map((p) => p.trim()).filter(Boolean);
+
+  const main = parts.shift() || "";
+  const colonIndex = main.indexOf(":");
+
+  let email = "Unknown";
+  let password = "Unknown";
+
+  if (colonIndex !== -1) {
+    email = main.slice(0, colonIndex).trim() || "Unknown";
+    password = main.slice(colonIndex + 1).trim() || "Unknown";
+  } else {
+    email = main.trim() || "Unknown";
+  }
+
+  const fields = {};
+  const cookieParts = [];
+
+  for (const part of parts) {
+    const segments = part
+      .split(";")
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    for (const segment of segments) {
+      const eqIndex = segment.indexOf("=");
+
+      if (eqIndex === -1) {
+        continue;
+      }
+
+      const key = segment.slice(0, eqIndex).trim();
+      const value = segment.slice(eqIndex + 1).trim();
+
+      if (!key || !value) continue;
+
+      if (
+        ["NetflixId", "SecureNetflixId", "nfvdid", "sp_dc", "sp_key", "cookie", "cookies"].includes(key)
+      ) {
+        cookieParts.push(`${key}=${value}`);
+      } else {
+        fields[key] = value;
+      }
+    }
+  }
+
+  if (cookieParts.length) {
+    fields["Cookies"] = cookieParts.join(";\n");
+  }
+
+  return {
+    email,
+    password,
+    fields,
+  };
+}
+
+function buildDeliveryEmbed(data, serviceType = "account") {
+  const niceService =
+    String(serviceType || "account")
+      .trim()
+      .replace(/[-_]+/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase()) || "Account";
+
+  const embed = new EmbedBuilder()
+    .setColor(client.getConfig().embedColor)
+    .setTitle(`${niceService} Delivery`)
+    .addFields(
+      { name: "Service", value: niceService, inline: true },
+      { name: "Email", value: `\`${data.email}\``, inline: false },
+      { name: "Password", value: `\`${data.password}\``, inline: false },
+      { name: "Status", value: "Unclaimed", inline: true }
+    )
+    .setFooter({ text: "Pending | pending.cc" })
+    .setTimestamp();
+
+  for (const [key, value] of Object.entries(data.fields)) {
+    embed.addFields({
+      name: key,
+      value: String(value).length > 1024 ? String(value).slice(0, 1021) + "..." : String(value),
+      inline: key !== "Cookies",
+    });
+  }
+
+  return embed;
+}
+
+function isDeliveryEmbed(embed) {
+  if (!embed?.title) return false;
+
+  return (
+    embed.title.endsWith("Delivery") ||
+    embed.title.endsWith("Delivery (CLAIMED)") ||
+    embed.title.endsWith("Delivery (DELIVERED)")
+  );
+}
+
+function getDeliveryIdentity(data) {
+  return String(data.email || "").trim().toLowerCase();
+}
+
+async function getExistingDeliveryIdentities(channel) {
+  const identities = new Set();
+
+  try {
+    const messages = await channel.messages.fetch({ limit: 100 });
+
+    for (const msg of messages.values()) {
+      if (!msg.embeds?.length) continue;
+
+      const embed = msg.embeds[0];
+      if (!isDeliveryEmbed(embed)) continue;
+
+      const emailField = embed.fields?.find((f) => f.name === "Email");
+      if (!emailField?.value) continue;
+
+      const identity = String(emailField.value)
+        .replace(/`/g, "")
+        .trim()
+        .toLowerCase();
+
+      if (identity) {
+        identities.add(identity);
+      }
+    }
+  } catch (error) {
+    console.error("failed to fetch existing delivery identities:", error);
+  }
+
+  return identities;
+}
+
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -558,6 +1073,7 @@ if (
     pendingProofUploads.delete(message.author.id);
     return message.reply("invalid vouch channel");
   }
+
 
   
     let order;
@@ -592,6 +1108,45 @@ if (
       .setTimestamp();
 
     await vouchChannel.send({ embeds: [embed] });
+    try {
+      const ticketChannel = message.guild.channels.cache.find(
+        (c) =>
+          c.type === ChannelType.GuildText &&
+          (c.topic || "").includes(`order:${pendingProof.orderId}`)
+      );
+
+    if (ticketChannel) {
+  await ticketChannel.setTopic(
+    buildTicketTopic(ticketChannel, { status: "proof-submitted" })
+  );
+  await updateTicketEmbed(ticketChannel);
+  await ticketChannel.send(`✅ proof was submitted by ${message.author}`);
+
+  try {
+    const newName = `ticket-proof-${pendingProof.orderId}`.toLowerCase().slice(0, 100);
+    if (ticketChannel.name !== newName) {
+      await ticketChannel.setName(newName);
+    }
+  } catch (renameErr) {
+    console.error("failed to rename ticket after proof:", renameErr);
+  }
+  const completedCategoryId = process.env.DISCORD_COMPLETED_CATEGORY_ID;
+
+if (completedCategoryId) {
+  try {
+    await ticketChannel.setParent(completedCategoryId);
+  } catch (moveErr) {
+    console.error("failed to move ticket after proof:", moveErr);
+  }
+}
+    }
+    } catch (err) {
+      console.error("failed to sync ticket status after proof:", err);
+    }
+    await logTicketEvent(
+  message.guild,
+  `🧾 Proof submitted for order ${pendingProof.orderId} by ${message.author.tag} (${message.author.id})`
+);
     pendingProofUploads.delete(message.author.id);
     await message.reply("proof sent").then((m) =>
       setTimeout(() => m.delete().catch(() => {}), 3000)
@@ -605,6 +1160,10 @@ if (!message.content.startsWith(prefix)) return;
   const args = message.content.slice(prefix.length).trim().split(/\s+/);
   const rawCommandName = args.shift()?.toLowerCase();
   if (!rawCommandName) return;
+
+  if (handledPrefixMessageIds.has(message.id)) return;
+  handledPrefixMessageIds.add(message.id);
+  try {
 
   console.log(`[PREFIX] ${rawCommandName} in #${message.channel.name}`);
 
@@ -634,13 +1193,15 @@ if (!message.content.startsWith(prefix)) return;
   "welcomemessage",
   "vouchchannel",
   "orderinfo",
+  "adminrole",
+  "logchannel",
+  "ordercreate",
+  "robuxsetprice",
 ]);
 
   if (staffOnlyCommands.has(rawCommandName) && !isStaff(message.member)) {
     return message.reply("<:remake:1495128909132595240> staff only");
   }
-
-  try {
 
   if (rawCommandName === "welcomeset") {
     const channelMention = message.mentions.channels.first();
@@ -663,6 +1224,306 @@ if (rawCommandName === "vouchchannel") {
 
   return message.reply(`vouch channel set to ${channelMention}`);
 }
+
+if (rawCommandName === "adminrole") {
+  const role = message.mentions.roles.first();
+  if (!role) return message.reply("mention a role");
+
+  const config = client.getConfig();
+  config.adminRoleId = role.id;
+  client.saveConfig(config);
+
+  return message.reply(`admin role set to ${role}`);
+}
+
+if (rawCommandName === "autorole") {
+  const role = message.mentions.roles.first();
+  if (!role) return message.reply("mention a role");
+
+  const config = client.getConfig();
+  config.autorole = role.id;
+  client.saveConfig(config);
+
+  return message.reply(`autorole set to ${role}`);
+}
+
+if (rawCommandName === "role" && args[0] === "all") {
+  const action = args[1];
+  const role = message.mentions.roles.first();
+
+  if (!["add", "remove"].includes(action)) {
+    return message.reply("use ,role all add/remove @role");
+  }
+
+  if (!role) {
+    return message.reply("mention a role");
+  }
+
+  const members = await message.guild.members.fetch();
+
+  let success = 0;
+  let failed = 0;
+
+  for (const member of members.values()) {
+    try {
+      if (action === "add") {
+        if (!member.roles.cache.has(role.id)) {
+          await member.roles.add(role);
+          success++;
+        }
+      } else {
+        if (member.roles.cache.has(role.id)) {
+          await member.roles.remove(role);
+          success++;
+        }
+      }
+    } catch {
+      failed++;
+    }
+  }
+
+  return message.reply(
+    `${action} ${role} → success: ${success}, failed: ${failed}`
+  );
+}
+
+if (rawCommandName === "logchannel") {
+  const channelMention = message.mentions.channels.first();
+  if (!channelMention) return message.reply("mention a channel");
+
+  const config = client.getConfig();
+  config.logChannelId = channelMention.id;
+  client.saveConfig(config);
+
+  return message.reply(`log channel set to ${channelMention}`);
+}
+
+if (
+  rawCommandName === "deliverychannel" ||
+  (rawCommandName === "delivery" && (args[0] || "").toLowerCase() === "channel")
+) {
+  if (!isStaff(message.member)) {
+    return message.reply("<:remake:1495128909132595240> staff only");
+  }
+
+  const channelMention = message.mentions.channels.first();
+  if (!channelMention) return message.reply("mention a channel");
+
+  const config = client.getConfig();
+  config.deliveryChannelId = channelMention.id;
+  client.saveConfig(config);
+
+  return message.reply(`delivery channel set to ${channelMention}`);
+}
+
+  
+
+if (rawCommandName === "forgetaccount") {
+  const identity = String(args[0] || "").trim().toLowerCase();
+  if (!identity) {
+    return message.reply("use ,forgetaccount <email>");
+  }
+
+  const config = client.getConfig();
+  if (!Array.isArray(config.usedDeliveryIdentities)) {
+    config.usedDeliveryIdentities = [];
+  }
+
+  const before = config.usedDeliveryIdentities.length;
+  config.usedDeliveryIdentities = config.usedDeliveryIdentities.filter((x) => x !== identity);
+  saveConfig(config);
+
+  if (config.usedDeliveryIdentities.length === before) {
+    return message.reply("that account was not stored");
+  }
+
+  return message.reply(`forgot ${identity}`);
+}
+
+if (rawCommandName === "accclaim") {
+  const rawTargetId = String(args[0] || "").trim();
+  const targetId = normalizeLinkedTargetId(rawTargetId);
+  if (!targetId) {
+    return message.reply("use ,accclaim <orderId|giveawayId> while replying to a delivery embed");
+  }
+
+  // allow either a message link passed as a second arg, or a reply to the delivery embed
+  const messageInput = args.slice(1).join(" ").trim();
+  let targetMessage = null;
+
+  if (messageInput) {
+    targetMessage = await getMessageFromLink(client, messageInput).catch(() => null);
+    if (!targetMessage) {
+      return message.reply("could not find message from the provided link");
+    }
+  } else {
+    if (!message.reference?.messageId) {
+      return message.reply("reply to a delivery embed first");
+    }
+
+    targetMessage = await message.channel.messages.fetch(message.reference.messageId).catch(() => null);
+    if (!targetMessage || !targetMessage.embeds?.length) {
+      return message.reply("could not read the replied message");
+    }
+  }
+
+  const embed = targetMessage.embeds[0];
+  if (!isDeliveryEmbed(embed)) {
+    return message.reply("that is not a delivery embed");
+  }
+
+  const order = await fetchOrderById(targetId).catch(() => null);
+  const giveaway = order ? null : findGiveawayById(targetId);
+
+  if (!order && !giveaway) {
+    return message.reply("invalid order or giveaway id");
+  }
+
+  const claimInfo = getDeliveryClaimInfoFromEmbed(embed);
+  if (!claimInfo) {
+    return message.reply("failed to read account info from that embed");
+  }
+
+  const ownerId = order?.discord_user_id || giveaway?.winner || null;
+  if (!ownerId) {
+    return message.reply("that order or giveaway has no linked user yet");
+  }
+
+  addUserOrderHistoryEntry(ownerId, {
+    targetId: order ? order.order_id : (giveaway.giveawayId || giveaway.messageId),
+    type: order ? "order" : "giveaway",
+    service: claimInfo.service,
+    email: claimInfo.email,
+    password: claimInfo.password,
+    claimedBy: claimInfo.claimedBy,
+    deliveredBy: claimInfo.deliveredBy,
+    embedTitle: claimInfo.title,
+    messageId: targetMessage.id,
+    channelId: targetMessage.channel.id,
+  });
+
+  const replyMsg = await message.reply(
+    `linked ${claimInfo.email} to ${order ? `order ${order.order_id}` : `giveaway ${giveaway.giveawayId || giveaway.messageId}`}`
+  );
+  setTimeout(() => replyMsg.delete().catch(() => {}), 5000);
+  return;
+}
+
+if (rawCommandName === "userorders") {
+  const targetUser = message.mentions.users.first() || message.author;
+  const entries = getUserOrderHistory(targetUser.id);
+
+  if (!entries.length) {
+    return message.reply(`no order history for ${targetUser}`);
+  }
+
+  const lines = entries
+    .slice(-15)
+    .reverse()
+    .map((entry, index) => {
+      return `${index + 1}. [${entry.type || "order"}] ${entry.targetId} | Service: ${entry.service || "Unknown"} | Email: ${entry.email || "Unknown"} | Claimed by: ${entry.claimedBy || "Unclaimed"} | Delivered by: ${entry.deliveredBy || "Not delivered"}`;
+    });
+
+  return message.reply(`history for ${targetUser}:\n${lines.join("\n")}`);
+}
+
+if (rawCommandName === "deliver") {
+  const config = client.getConfig();
+  const serviceType = (args[0] || "").trim().toLowerCase();
+
+  if (!serviceType) {
+    return message.reply("use ,deliver <service> then paste account data");
+  }
+
+  const deliveryChannel = message.guild.channels.cache.get(config.deliveryChannelId);
+
+  if (!deliveryChannel || !deliveryChannel.isTextBased()) {
+    return message.reply("set delivery channel first using ,deliverychannel");
+  }
+
+  const rawText = message.content
+    .slice(prefix.length + rawCommandName.length + 1 + serviceType.length)
+    .trim();
+
+  if (!rawText) {
+    return message.reply("paste account data");
+  }
+
+  const lines = rawText
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    return message.reply("no valid lines found");
+  }
+
+  const existingIdentities = await getExistingDeliveryIdentities(deliveryChannel);
+  const storedIdentities = getUsedDeliveryIdentities();
+  const seenInBatch = new Set();
+  const skipped = [];
+  const embeds = [];
+
+  console.log("[DELIVER] raw lines:", lines.length);
+
+  for (const line of lines) {
+    try {
+      const parsed = parseAccountLine(line);
+      const identity = getDeliveryIdentity(parsed);
+
+      if (!identity || identity === "unknown") {
+        skipped.push(`${line} (missing identity)`);
+        continue;
+      }
+
+      if (seenInBatch.has(identity)) {
+        skipped.push(`${identity} (duplicate in this paste)`);
+        continue;
+      }
+
+      if (existingIdentities.has(identity) || storedIdentities.has(identity)) {
+        skipped.push(`${identity} (already delivered before)`);
+        continue;
+      }
+
+      seenInBatch.add(identity);
+
+      const embed = buildDeliveryEmbed(parsed, serviceType);
+      embeds.push({ embed, identity });
+    } catch (err) {
+      console.error("failed to parse line:", line, err);
+      skipped.push(`${line} (parse failed)`);
+    }
+  }
+
+  if (!embeds.length) {
+    const reason = skipped.length
+      ? `failed to parse any accounts. skipped:\n- ${skipped.join("\n- ")}`
+      : "failed to parse any accounts";
+    return message.reply(reason);
+  }
+
+  for (const { embed, identity } of embeds) {
+    const msg = await deliveryChannel.send({ embeds: [embed] });
+    await msg.react("📦").catch(() => {});
+
+    if (identity) {
+      addUsedDeliveryIdentity(identity);
+    }
+  }
+
+  let replyText = `delivered ${embeds.length} ${serviceType} item(s)`;
+
+  if (skipped.length) {
+    replyText += `\nskipped ${skipped.length} item(s):\n- ${skipped.join("\n- ")}`;
+  }
+
+  const replyMsg = await message.reply(replyText);
+  setTimeout(() => replyMsg.delete().catch(() => {}), 8000);
+
+  return;
+}
+
 
   if (rawCommandName === "welcomemessage") {
   const text = args.join(" ").trim();
@@ -710,6 +1571,36 @@ if (rawCommandName === "vouchchannel") {
   return;
 }
 
+if (rawCommandName === "gwinfo") {
+  const id = normalizeLinkedTargetId(args[0]);
+  if (!id) return message.reply("usage: ,gwinfo <giveawayId|messageId>");
+
+  const giveaway = findGiveawayById(id);
+  if (!giveaway) {
+    return message.reply("invalid giveaway id");
+  }
+
+  const config = client.getConfig();
+  const linkedEntries = Object.values(config.userOrderHistory || {})
+    .flat()
+    .filter(
+      (entry) => entry.targetId === id || entry.targetId === (giveaway.giveawayId || giveaway.messageId)
+    );
+
+  const linkedAccountText = linkedEntries.length
+    ? linkedEntries
+        .map(
+          (entry) =>
+            `Service: ${entry.service || "Unknown"} | Email: ${entry.email || "Unknown"} | Claimed by: ${entry.claimedBy || "Unclaimed"} | Delivered by: ${entry.deliveredBy || "Not delivered"}`
+        )
+        .join("\n")
+    : "none";
+
+  return message.reply(
+    `🎁 Giveaway: \`${giveaway.giveawayId || giveaway.messageId}\`\nCreated by: <@${giveaway.hostId}>\nStatus: ${giveaway.ended ? "Ended" : "Active"}\nWinner: ${giveaway.winner ? `<@${giveaway.winner}>` : "Not set"}\nLinked Account: ${linkedAccountText}`
+  );
+}
+
 if (rawCommandName === "orderinfo") {
   const explicitOrderId = (args[0] || "").trim();
   const orderId = explicitOrderId || getTicketOrderId(channel);
@@ -720,9 +1611,22 @@ if (rawCommandName === "orderinfo") {
 
   try {
     const order = await fetchOrderById(orderId);
+    const config = client.getConfig();
+    const linkedEntries = Object.values(config.userOrderHistory || {})
+      .flat()
+      .filter((entry) => entry.targetId === orderId);
+
+    const linkedAccountText = linkedEntries.length
+      ? linkedEntries
+          .map(
+            (entry) =>
+              `Service: ${entry.service || "Unknown"} | Email: ${entry.email || "Unknown"} | Claimed by: ${entry.claimedBy || "Unclaimed"} | Delivered by: ${entry.deliveredBy || "Not delivered"}`
+          )
+          .join("\n")
+      : "none";
 
     return message.reply(
-      `Order ID: ${order.order_id}\nStatus: ${order.status || "pending"}\nBuyer ID: ${order.discord_user_id || "unknown"}\nBuyer Username: ${order.discord_username || "unknown"}\nPayment Method: ${order.payment_method || "not set"}\nProduct: ${order.product || "not set"}\nNotes: ${order.notes || "none"}`
+      `Order ID: ${order.order_id}\nStatus: ${order.status || "pending"}\nBuyer ID: ${order.discord_user_id || "unknown"}\nBuyer Username: ${order.discord_username || "unknown"}\nPayment Method: ${order.payment_method || "not set"}\nProduct: ${order.product || "not set"}\nNotes: ${order.notes || "none"}\nLinked Account: ${linkedAccountText}`
     );
   } catch (error) {
     console.error("orderinfo failed:", error);
@@ -772,16 +1676,24 @@ if (rawCommandName === "paid") {
   await updateOrderById(linkedOrderId, orderUpdates);
 }
 
-    const newChannelName =
-      method === "paid"
-        ? `ticket-paid-${orderSuffix}`.slice(0, 100)
-        : `ticket-paid-${sanitizeChannelSegment(method)}-${orderSuffix}`.slice(0, 100);
+    const paymentSegment = method === "paid" ? "confirmed" : sanitizeChannelSegment(method);
+const newChannelName = `ticket-paid-${paymentSegment}-${orderSuffix}`.slice(0, 100);
 
     if (channel.name !== newChannelName) {
       await channel.setName(newChannelName);
     }
 
     await updateTicketEmbed(channel);
+
+    const inProgressCategoryId = process.env.DISCORD_IN_PROGRESS_CATEGORY_ID;
+
+    if (inProgressCategoryId) {
+      try {
+        await channel.setParent(inProgressCategoryId);
+      } catch (moveErr) {
+        console.error("paid command move failed:", moveErr);
+      }
+    }
 
     const methodLabel =
       method === "paid" ? "Payment Confirmed" : `Payment Confirmed (${method.toUpperCase()})`;
@@ -795,13 +1707,9 @@ if (rawCommandName === "paid") {
     await channel.send({ embeds: [embed] });
 
     await logTicketEvent(
-      message.guild,
-      `💰 Payment confirmed in #${channel.name} by ${message.author.tag} using ${method.toUpperCase()}`
-    );
-
-setTimeout(() => {
-  channel.delete().catch(() => {});
-}, 10000);
+  message.guild,
+  `💰 Payment confirmed for order ${linkedOrderId || "unknown"} in #${channel.name} by ${message.author.tag} using ${method.toUpperCase()}`
+);
 
     return message.reply(`marked as ${method}`);
   } catch (err) {
@@ -962,6 +1870,27 @@ if (rawCommandName === "ticketrename") {
       });
     }
     await updateTicketEmbed(channel);
+    if (value === "completed" && linkedOrderId) {
+      try {
+        const newName = `ticket-completed-${linkedOrderId}`.toLowerCase().slice(0, 100);
+        if (channel.name !== newName) {
+          await channel.setName(newName);
+        }
+      } catch (renameErr) {
+        console.error("ticketstatus rename failed:", renameErr);
+      }
+    }
+    if (value === "completed") {
+  const completedCategoryId = process.env.DISCORD_COMPLETED_CATEGORY_ID;
+
+  if (completedCategoryId) {
+    try {
+      await channel.setParent(completedCategoryId);
+    } catch (moveErr) {
+      console.error("ticketstatus move failed:", moveErr);
+    }
+  }
+}
     return message.reply(`status set to ${value}`);
   } catch (error) {
     console.error("ticketstatus failed:", error);
@@ -1125,10 +2054,14 @@ const statusMessage = await statusChannel.send({
 
     await message.channel.bulkDelete(amount, true).catch(() => {});
     return message.channel
-      .send(`deleted ${amount} messages`)
+      .send({
+        content: `deleted ${amount} messages`,
+        reply: { messageReference: null },
+      })
       .then((m) => setTimeout(() => m.delete().catch(() => {}), 2000));
   }
 
+  // Move this block here (after all prefix command if blocks)
   const aliasMap = {
     btcset: "payments",
     ethset: "payments",
@@ -1142,8 +2075,8 @@ const statusMessage = await statusChannel.send({
     usdt: "payments",
     sol: "payments",
     paypal: "payments",
-    ticketclose: "closeticket",
-    closeticket: "closeticket",
+    ticketclose: "ticketclose",
+    closeticket: "ticketclose",
     ticketpanel: "ticketpanel",
     ticketadd: "ticketadd",
     ticketremove: "ticketremove",
@@ -1160,6 +2093,20 @@ const statusMessage = await statusChannel.send({
     giveawaycreate: "gwstart",
     giveawayend: "gwend",
     giveawayreroll: "gwreroll",
+    hardban: "hardban",
+    lock: "lock",
+    nuke: "nuke",
+    lockdown: "lockdown",
+    unlockall: "unlockall",
+    raid: "raid",
+    unlock: "unlock",
+    unban: "unban",
+    accclaim: "accclaim",
+    userorders: "userorders",
+    gwinfo: "gwinfo",
+    usedaccounts: "usedaccounts",
+    forgetaccount: "forgetaccount",
+    salechannel: "salechannel",
     purge: "clear",
     adminrole: "adminrole",
     logchannel: "logchannel",
@@ -1175,12 +2122,14 @@ const statusMessage = await statusChannel.send({
     console.error(`Error running command ${rawCommandName}:`, error);
     await message.reply("something broke while running that command.");
   }
-  } catch (error) {
-    console.error(`Unhandled prefix command error for ${rawCommandName}:`, error);
-    try {
-      await message.reply(`command failed: ${rawCommandName}`);
-    } catch {}
-  }
+} catch (error) {
+  console.error(`Unhandled prefix command error for ${rawCommandName}:`, error);
+  try {
+    await message.reply(`command failed: ${rawCommandName}`);
+  } catch {}
+} finally {
+  handledPrefixMessageIds.delete(message.id);
+}
 });
 
 client.on("interactionCreate", async (interaction) => {
@@ -1529,23 +2478,31 @@ if (claimedId && claimedId !== openerId) {
 
  if (interaction.isChatInputCommand()) {
   if (interaction.commandName === "vouch") {
-    const modal = new ModalBuilder()
-      .setCustomId("vouch_modal")
-      .setTitle("Submit Vouch");
+  const modal = new ModalBuilder()
+    .setCustomId("vouch_modal")
+    .setTitle("Submit Vouch");
 
-    const noteInput = new TextInputBuilder()
-      .setCustomId("vouch_note")
-      .setLabel("Your vouch")
-      .setStyle(TextInputStyle.Paragraph)
-      .setRequired(true);
+  const orderInput = new TextInputBuilder()
+    .setCustomId("vouch_order_id")
+    .setLabel("Order ID")
+    .setStyle(TextInputStyle.Short)
+    .setPlaceholder("PND-1000")
+    .setRequired(true);
 
-    modal.addComponents(
-      new ActionRowBuilder().addComponents(noteInput)
-    );
+  const noteInput = new TextInputBuilder()
+    .setCustomId("vouch_note")
+    .setLabel("Your vouch")
+    .setStyle(TextInputStyle.Paragraph)
+    .setRequired(true);
 
-    await interaction.showModal(modal);
-    return;
-  }
+  modal.addComponents(
+    new ActionRowBuilder().addComponents(orderInput),
+    new ActionRowBuilder().addComponents(noteInput)
+  );
+
+  await interaction.showModal(modal);
+  return;
+}
 
   if (interaction.commandName === "proof") {
     if (!isStaff(interaction.member)) {
@@ -1582,23 +2539,120 @@ if (interaction.isModalSubmit()) {
 
   // ===== VOUCH =====
   if (interaction.customId === "vouch_modal") {
-    const note = interaction.fields.getTextInputValue("vouch_note");
+    await interaction.deferReply({ flags: 64 });
+  const orderId = interaction.fields.getTextInputValue("vouch_order_id").trim();
+  const note = interaction.fields.getTextInputValue("vouch_note");
 
-    const embed = new EmbedBuilder()
-      .setColor(0x57f287)
-      .setTitle("✅ Vouch")
-      .setDescription(
-        `**User:** ${interaction.user}\n\n**Note:** ${note}`
-      )
-      .setFooter({ text: "/Pending | pending.cc" });
-
-    await vouchChannel.send({ embeds: [embed] });
-
-    return interaction.reply({
-      content: "vouch sent",
-      flags: 64,
-    });
+  let order;
+  try {
+    order = await fetchOrderById(orderId);
+  } catch (error) {
+    return interaction.editReply({
+  content: `invalid order id: ${orderId}`,
+});
   }
+  if (order.discord_user_id && order.discord_user_id !== interaction.user.id) {
+    return interaction.editReply({
+  content: "that order does not belong to you",
+});
+  }
+  if (order.status === "vouched") {
+ return interaction.editReply({
+  content: "this order has already been vouched",
+});
+}
+
+  const embed = new EmbedBuilder()
+    .setColor(0x57f287)
+    .setTitle("✅ Vouch")
+    .addFields(
+      { name: "Order ID", value: order.order_id || orderId, inline: true },
+      {
+        name: "Buyer",
+        value: order.discord_user_id ? `<@${order.discord_user_id}>` : "Unknown",
+        inline: true,
+      },
+      {
+        name: "Vouched by",
+        value: `${interaction.user}`,
+        inline: true,
+      },
+      {
+        name: "Product",
+        value: order.product || "Not set",
+        inline: true,
+      },
+      {
+        name: "Payment",
+        value: order.payment_method || "Not set",
+        inline: true,
+      },
+      {
+        name: "Note",
+        value: note,
+        inline: false,
+      }
+    )
+    .setFooter({ text: "/Pending | pending.cc" });
+
+  await vouchChannel.send({ embeds: [embed] });
+
+  try {
+    await updateOrderById(orderId, {
+      status: "vouched",
+      vouched_by: interaction.user.id,
+      vouch_note: note,
+    });
+  } catch (error) {
+    console.error("failed to mark order as vouched:", error);
+  }
+
+  try {
+    const ticketChannel = interaction.guild.channels.cache.find(
+      (c) =>
+        c.type === ChannelType.GuildText &&
+        (c.topic || "").includes(`order:${orderId}`)
+    );
+
+    if (ticketChannel) {
+      await ticketChannel.setTopic(
+        buildTicketTopic(ticketChannel, { status: "vouched" })
+      );
+      await updateTicketEmbed(ticketChannel);
+
+      await ticketChannel.send(`✅ this order has been vouched by ${interaction.user}`);
+      try {
+        const newName = `ticket-vouched-${orderId}`.toLowerCase().slice(0, 100);
+        if (ticketChannel.name !== newName) {
+          await ticketChannel.setName(newName);
+        }
+      } catch (renameErr) {
+        console.error("failed to rename ticket after vouch:", renameErr);
+      }
+      const completedCategoryId = process.env.DISCORD_COMPLETED_CATEGORY_ID;
+
+if (completedCategoryId) {
+  try {
+    await ticketChannel.setParent(completedCategoryId);
+  } catch (moveErr) {
+    console.error("failed to move ticket to completed category:", moveErr);
+  }
+}
+    }
+ } catch (err) {
+  console.error("failed to sync ticket status after vouch:", err);
+}
+
+await logTicketEvent(
+  interaction.guild,
+  `✅ Order ${orderId} vouched by ${interaction.user.tag} (${interaction.user.id})`
+);
+
+return interaction.editReply({
+  content: "vouch submitted successfully",
+});
+
+}
 
   // ===== PROOF =====
   if (interaction.customId === "proof_modal") {
@@ -1661,9 +2715,9 @@ try {
 }
 });
 
-client.once("clientReady", () => {
+client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
-  client.user.setActivity(",ping /ping");
+  client.user.setActivity("/pending | https://pending.cc");
 });
 
 client.login(token);

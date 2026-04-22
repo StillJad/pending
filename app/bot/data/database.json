@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "orders": {},
+  "giveaways": [],
+  "snipes": {
+    "messages": {
+      "1484528628233404526": {
+        "authorId": "Unknown",
+        "content": "[No content]",
+        "attachments": [],
+        "deletedAt": 1776798021496
+      },
+      "1495141805220560906": {
+        "authorId": "1373667209099870258",
+        "content": ",welcomechannelset <#1492245267678761000>",
+        "attachments": [],
+        "deletedAt": 1776800679742
+      },
+      "1495226553389416468": {
+        "authorId": "Unknown",
+        "content": "[No content]",
+        "attachments": [],
+        "deletedAt": 1776802447056
+      },
+      "1492567221610745896": {
+        "authorId": "1373667209099870258",
+        "content": ",snipe",
+        "attachments": [],
+        "deletedAt": 1776799012040
+      },
+      "1496178331736084681": {
+        "authorId": "Unknown",
+        "content": "[No content]",
+        "attachments": [],
+        "deletedAt": 1776798791637
+      },
+      "1492245489234477108": {
+        "authorId": "Unknown",
+        "content": "[No content]",
+        "attachments": [],
+        "deletedAt": 1776799340822
+      }
+    },
+    "reactions": {
+      "1484528628233404526": {
+        "emoji": "💀",
+        "userId": "1474787629345149039",
+        "authorId": "Unknown",
+        "messageContent": "[No content]",
+        "removedAt": 1776798694684
+      }
+    }
+  },
+  "settings": {
+    "global": {
+      "autorole": null,
+      "adminRoleId": "1495863669865578749",
+      "logChannelId": "",
+      "welcomeChannelId": "",
+      "welcomeMessage": "Yo {user} Welcome to Pending Store !\n\nWe are now at {membercount} Members <:250885giveaway:1495229338671382690>\n\nMake sure to check these out \n\n<:SGear_mlm:1495233123179565256> Rules: <#1403425018016174100> \n\n<:verified_mlm:1495216740286599178> Vouches & Proofs: <#1491834863739863111> & <#1495015246916616203> \n\n<:MLM_BlackGlobe:1495235083462770838> Website: SOON",
+      "welcomeTitle": "Welcome to {server}",
+      "welcomeThumbnail": "avatar",
+      "ticketBlacklist": [],
+      "payments": {
+        "btc": "",
+        "eth": "",
+        "ltc": "",
+        "usdt": "",
+        "sol": "",
+        "paypal": ""
+      },
+      "statusChannelId": "",
+      "statusMessageId": "",
+      "trackedStatusUserIds": [],
+      "vouchChannelId": "",
+      "deliveryChannelId": "",
+      "saleChannelId": "",
+      "modLogChannelId": "",
+      "errorChannelId": "",
+      "robuxPricePer1000": 8.5,
+      "usedDeliveryIdentities": [],
+      "embedColor": 15548997,
+      "userOrderHistory": {},
+      "lockdownLockedChannels": []
+    },
+    "guilds": {
+      "243932079191097346": {
+        "autorole": null,
+        "adminRoleId": "",
+        "logChannelId": "1496205584045834310",
+        "welcomeChannelId": "1492245267678761000",
+        "welcomeMessage": "Welcome {user} to {server}!",
+        "welcomeTitle": "Welcome to {server}",
+        "welcomeThumbnail": "avatar",
+        "ticketBlacklist": [],
+        "payments": {
+          "btc": "",
+          "eth": "",
+          "ltc": "",
+          "usdt": "",
+          "sol": "",
+          "paypal": ""
+        },
+        "statusChannelId": "1495226553389416468",
+        "statusMessageId": "1496236580485202032",
+        "trackedStatusUserIds": [
+          "240308439950163969",
+          "1474787629345149039",
+          "1373667209099870258"
+        ],
+        "vouchChannelId": "1495547570217291957",
+        "deliveryChannelId": "",
+        "saleChannelId": "",
+        "modLogChannelId": "",
+        "errorChannelId": "",
+        "robuxPricePer1000": 8.5,
+        "usedDeliveryIdentities": [],
+        "embedColor": 15548997,
+        "userOrderHistory": {},
+        "lockdownLockedChannels": []
+      }
+    }
+  }
+}
