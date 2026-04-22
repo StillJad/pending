@@ -45,10 +45,10 @@ export default function CheckoutPage() {
 
   if (!product) {
     return (
-      <main className="min-h-screen bg-black px-6 py-10 text-white">
-        <div className="mx-auto max-w-4xl">
-          <h1 className="text-4xl font-bold">Product not found</h1>
-          <p className="mt-3 text-white/70">
+      <main className="text-white">
+        <div className="mx-auto max-w-6xl px-6 py-10">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">Product not found</h1>
+          <p className="mt-3 text-white/60">
             This product does not exist or the link is incorrect.
           </p>
         </div>
@@ -57,17 +57,17 @@ export default function CheckoutPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black px-6 py-10 text-white">
-      <div className="mx-auto max-w-5xl">
+    <main className="text-white">
+      <div className="mx-auto max-w-6xl px-6 py-10">
         <p className="text-sm text-white/50">Checkout</p>
-        <h1 className="mt-2 text-4xl font-bold">{product.name}</h1>
-        <p className="mt-3 max-w-2xl text-white/70">
+        <h1 className="mt-2 text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">{product.name}</h1>
+        <p className="mt-3 max-w-2xl text-white/60">
           Review this product before adding it to your cart.
         </p>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-[1.5fr_420px]">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-2xl font-semibold">Product Details</h2>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h2 className="text-2xl font-semibold text-purple-300">Product Details</h2>
 
             <div className="mt-6 space-y-4 text-white/80">
               <div>
@@ -92,8 +92,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-            <h2 className="text-2xl font-semibold">Order Summary</h2>
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
+            <h2 className="text-2xl font-semibold text-purple-300">Order Summary</h2>
 
             <div className="mt-6 flex items-center justify-between text-white/80">
               <span>Product</span>
@@ -107,7 +107,7 @@ export default function CheckoutPage() {
 
             <div className="mt-4">
               <p className="text-sm text-white/50">Quantity</p>
-              <div className="mt-2 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-black/20 px-3 py-2">
+              <div className="mt-2 flex w-fit items-center gap-3 rounded-xl border border-white/10 bg-black/30 backdrop-blur px-3 py-2">
                 <button
                   type="button"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -129,13 +129,13 @@ export default function CheckoutPage() {
             <div className="mt-6 border-t border-white/10 pt-6">
               <div className="flex items-center justify-between text-xl font-semibold">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span className="text-purple-300">${total.toFixed(2)}</span>
               </div>
             </div>
 
             <button
               onClick={handleAddToCart}
-              className="mt-8 w-full rounded-xl bg-white px-4 py-3 font-semibold text-black transition hover:opacity-80"
+              className="mt-8 w-full rounded-xl bg-gradient-to-r from-purple-500 to-blue-500 px-4 py-3 font-semibold text-white transition hover:opacity-90"
             >
               Add to Cart
             </button>
