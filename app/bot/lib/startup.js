@@ -3,6 +3,7 @@ function validateStartupEnv(env = process.env) {
   const recommended = [
     "CLIENT_ID",
     "GUILD_ID",
+    "INTERNAL_BOT_API_KEY",
     "PREFIX",
     "ORDER_API_BASE_URL",
     "SUPABASE_URL",
