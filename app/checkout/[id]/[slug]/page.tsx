@@ -73,13 +73,13 @@ export default function CheckoutPage() {
           <div className="flex flex-wrap gap-3">
             <Link
               href="/products"
-              className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-black hover:opacity-90"
+              className="rounded-lg bg-[#8b5cf6] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
             >
               Browse products
             </Link>
             <Link
               href="/ticket"
-              className="rounded-lg border border-white/20 px-4 py-2 text-sm text-white/80"
+              className="rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white"
             >
               Contact support
             </Link>
@@ -94,20 +94,21 @@ export default function CheckoutPage() {
       <div>
         <Link
           href={`/products/${product.category.toLowerCase().replace(/\s+/g, "-")}`}
-          className="text-sm text-white/60 hover:text-white"
+          className="text-sm text-white/60 transition hover:text-[#8b5cf6]"
         >
           Back to {product.category}
         </Link>
 
-        <h1 className="mt-4 text-3xl font-semibold text-white">{product.name}</h1>
+        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">
+          {product.name}
+        </h1>
         <p className="mt-3 max-w-xl text-white/70">
-          Review this item, choose a quantity, and add it to your cart before
-          opening Discord.
+          Review this item, choose a quantity, and add it to your cart.
         </p>
       </div>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_420px]">
-        <div className="rounded-xl border border-white/10 p-6">
+        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
               <p className="text-sm text-white/50">{product.category}</p>
@@ -119,7 +120,7 @@ export default function CheckoutPage() {
 
             <div className="rounded-xl border border-white/10 p-4 text-left lg:min-w-[180px] lg:text-right">
               <p className="text-sm text-white/50">Unit price</p>
-              <p className="mt-2 text-2xl font-semibold text-white">
+              <p className="mt-2 text-2xl font-semibold text-[#8b5cf6]">
                 {formatCurrency(unitPrice)}
               </p>
             </div>
@@ -130,7 +131,7 @@ export default function CheckoutPage() {
             <div className="mt-4 space-y-3">
               {fulfillmentNotes.map((note) => (
                 <div key={note} className="flex items-start gap-3 text-sm text-white/70">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white/40" />
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8b5cf6]/60" />
                   <span>{note}</span>
                 </div>
               ))}
@@ -138,7 +139,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <aside className="rounded-xl border border-white/10 p-6">
+        <aside className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
           <div>
             <p className="text-xl font-medium text-white">Order summary</p>
             <p className="mt-2 text-sm text-white/60">
@@ -165,7 +166,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 hover:text-white disabled:opacity-40"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white disabled:opacity-40"
                 disabled={quantity === 1}
               >
                 -
@@ -176,7 +177,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setQuantity((current) => current + 1)}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 hover:text-white"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white"
               >
                 +
               </button>
@@ -186,7 +187,7 @@ export default function CheckoutPage() {
           <div className="mt-6 rounded-xl border border-white/10 p-5">
             <div className="flex items-center justify-between">
               <span className="text-white/70">Total</span>
-              <span className="text-3xl font-semibold text-white">
+              <span className="text-3xl font-semibold text-[#8b5cf6]">
                 {formatCurrency(total)}
               </span>
             </div>
@@ -194,7 +195,7 @@ export default function CheckoutPage() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-8 w-full rounded-lg bg-white px-4 py-3 text-sm font-medium text-black hover:opacity-90"
+            className="mt-8 w-full rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
           >
             Add to cart
           </button>
