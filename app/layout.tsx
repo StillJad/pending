@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { BRAND_NAME, BRAND_SUBLABEL, SITE_DESCRIPTION } from "@/lib/site";
+import { getSessionFromCookieStore } from "@/lib/auth";
 import "./globals.css";
 
 const sans = Inter({
@@ -25,11 +27,14 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const viewer = await getSessionFromCookieStore(cookieStore);
+
   return (
     <html lang="en">
       <body className={`${sans.variable} ${mono.variable} font-sans bg-[#0b0b0f] text-white`}>
@@ -46,7 +51,7 @@ export default function RootLayout({
                   </span>
                 </Link>
 
-                <SiteNav />
+                <SiteNav viewer={viewer} />
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#8b5cf6]/45 to-transparent" />
               </div>
