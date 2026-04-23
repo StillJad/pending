@@ -15,9 +15,9 @@ type CartItem = {
 };
 
 const fulfillmentNotes = [
-  "Transparent pricing before checkout",
-  "Multi-item cart support",
-  "Discord-based fulfillment after order placement",
+  "Price is fixed before checkout.",
+  "The cart supports more than one item.",
+  "Final handoff happens in Discord.",
 ] as const;
 
 export default function CheckoutPage() {
@@ -66,22 +66,22 @@ export default function CheckoutPage() {
       <main className="mx-auto max-w-6xl px-4 py-10">
         <div className="space-y-4">
           <h1 className="text-3xl font-semibold text-white">Product not found.</h1>
-          <p className="max-w-xl text-white/70">
+          <p className="max-w-xl text-sm text-white/70">
             This product does not exist or the link is no longer valid. Return
             to the catalog to keep browsing.
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
               href="/products"
-              className="rounded-lg bg-[#8b5cf6] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
+              className="rounded-lg bg-[#8b5cf6] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
             >
               Browse products
             </Link>
             <Link
               href="/ticket"
-              className="rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white"
+              className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-white/70 transition hover:border-[#8b5cf6]/50 hover:text-white"
             >
-              Contact support
+              Need help?
             </Link>
           </div>
         </div>
@@ -94,7 +94,7 @@ export default function CheckoutPage() {
       <div>
         <Link
           href={`/products/${product.category.toLowerCase().replace(/\s+/g, "-")}`}
-          className="text-sm text-white/60 transition hover:text-[#8b5cf6]"
+          className="text-sm text-white/60 transition hover:text-white"
         >
           Back to {product.category}
         </Link>
@@ -102,36 +102,42 @@ export default function CheckoutPage() {
         <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">
           {product.name}
         </h1>
-        <p className="mt-3 max-w-xl text-white/70">
-          Review this item, choose a quantity, and add it to your cart.
+        <p className="mt-3 max-w-xl text-sm text-white/70">
+          Pick a quantity. Add it to the cart.
         </p>
       </div>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_420px]">
-        <div className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
+        <div className="rounded-xl border border-white/10 bg-transparent p-6">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm text-white/50">{product.category}</p>
-              <h2 className="mt-3 text-2xl font-semibold text-white">
+              <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+                {product.category}
+              </p>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
                 {product.name}
               </h2>
-              <p className="mt-4 text-white/70">{product.description}</p>
+              <p className="mt-4 text-sm text-white/70">{product.description}</p>
             </div>
 
             <div className="rounded-xl border border-white/10 p-4 text-left lg:min-w-[180px] lg:text-right">
-              <p className="text-sm text-white/50">Unit price</p>
-              <p className="mt-2 text-2xl font-semibold text-[#8b5cf6]">
+              <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+                Unit price
+              </p>
+              <p className="mt-2 font-mono text-2xl text-white/90">
                 {formatCurrency(unitPrice)}
               </p>
             </div>
           </div>
 
           <div className="mt-8 rounded-xl border border-white/10 p-5">
-            <p className="text-lg font-medium text-white">Product details</p>
+            <p className="text-lg font-semibold tracking-tight text-white">
+              Notes
+            </p>
             <div className="mt-4 space-y-3">
               {fulfillmentNotes.map((note) => (
                 <div key={note} className="flex items-start gap-3 text-sm text-white/70">
-                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-[#8b5cf6]/60" />
+                  <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white/40" />
                   <span>{note}</span>
                 </div>
               ))}
@@ -139,45 +145,55 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <aside className="rounded-xl border border-white/10 bg-white/[0.02] p-6">
+        <aside className="rounded-xl border border-white/10 bg-transparent p-6">
           <div>
-            <p className="text-xl font-medium text-white">Order summary</p>
+            <p className="text-xl font-semibold tracking-tight text-white">
+              Summary
+            </p>
             <p className="mt-2 text-sm text-white/60">
-              Review your order before checkout.
+              Review the order before checkout.
             </p>
           </div>
 
           <div className="mt-8 space-y-4">
             <div className="flex items-center justify-between gap-4 text-white/70">
-              <span>Product</span>
-              <span className="max-w-[180px] text-right text-white">
+              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+                Product
+              </span>
+              <span className="max-w-[180px] text-right text-sm text-white/90">
                 {product.name}
               </span>
             </div>
             <div className="flex items-center justify-between text-white/70">
-              <span>Unit price</span>
-              <span className="text-white">{formatCurrency(unitPrice)}</span>
+              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+                Unit price
+              </span>
+              <span className="font-mono text-sm text-white/90">
+                {formatCurrency(unitPrice)}
+              </span>
             </div>
           </div>
 
           <div className="mt-6">
-            <p className="text-sm text-white/60">Quantity</p>
+            <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+              Quantity
+            </p>
             <div className="mt-3 flex w-fit items-center gap-3 rounded-xl border border-white/10 p-2">
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white disabled:opacity-40"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white disabled:opacity-40"
                 disabled={quantity === 1}
               >
                 -
               </button>
-              <span className="min-w-10 text-center text-xl font-medium text-white">
+              <span className="min-w-10 text-center font-mono text-xl text-white/90">
                 {quantity}
               </span>
               <button
                 type="button"
                 onClick={() => setQuantity((current) => current + 1)}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
               >
                 +
               </button>
@@ -186,8 +202,10 @@ export default function CheckoutPage() {
 
           <div className="mt-6 rounded-xl border border-white/10 p-5">
             <div className="flex items-center justify-between">
-              <span className="text-white/70">Total</span>
-              <span className="text-3xl font-semibold text-[#8b5cf6]">
+              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+                Total
+              </span>
+              <span className="font-mono text-3xl text-[#8b5cf6]">
                 {formatCurrency(total)}
               </span>
             </div>
@@ -195,13 +213,13 @@ export default function CheckoutPage() {
 
           <button
             onClick={handleAddToCart}
-            className="mt-8 w-full rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
+            className="mt-8 w-full rounded-lg bg-[#8b5cf6] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
           >
             Add to cart
           </button>
 
           <p className="mt-4 text-sm text-white/50">
-            Add this item to your cart before opening Discord.
+            Add this item to the cart before opening Discord.
           </p>
         </aside>
       </section>
