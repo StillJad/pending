@@ -45,10 +45,3 @@ export default function ProductsPage() {
     </main>
   );
 }
-            </Link>
-          ))}
-        </div>
-      </div>
-    </main>
-  );
-}
