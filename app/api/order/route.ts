@@ -1,4 +1,4 @@
-import { getSessionAccessError, getSessionFromRequest } from "@/lib/auth";
+import { getSessionFromRequest } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
@@ -32,36 +32,42 @@ export async function POST(req: Request) {
         internalKey === process.env.INTERNAL_BOT_API_KEY
     );
     const session = isTrustedBot ? null : await getSessionFromRequest(req);
-    const accessError = isTrustedBot ? null : getSessionAccessError(session);
+    let discordUserId: string | null = null;
+    let discordUsername: string | null = null;
 
-    if (accessError === "login_required") {
-      return Response.json(
-        {
-          success: false,
-          error: "Unauthorized",
-        },
-        { status: 401 }
-      );
-    }
+    if (!isTrustedBot) {
+      if (!session) {
+        return Response.json(
+          {
+            success: false,
+            error: "Unauthorized",
+          },
+          { status: 401 }
+        );
+      }
 
-    if (accessError === "guild_required") {
-      return Response.json(
-        {
-          success: false,
-          error: "Join the Discord server to continue",
-        },
-        { status: 403 }
-      );
-    }
+      if (!session.isInServer) {
+        return Response.json(
+          {
+            success: false,
+            error: "Join the Discord server to continue",
+          },
+          { status: 403 }
+        );
+      }
 
-    if (accessError === "role_required") {
-      return Response.json(
-        {
-          success: false,
-          error: "Required Discord role missing",
-        },
-        { status: 403 }
-      );
+      if (!session.roleCheckPassed) {
+        return Response.json(
+          {
+            success: false,
+            error: "Required Discord role missing",
+          },
+          { status: 403 }
+        );
+      }
+
+      discordUserId = session.discordId;
+      discordUsername = session.username;
     }
 
     const body = await req.json();
@@ -100,10 +106,11 @@ export async function POST(req: Request) {
       typeof body.discord_username === "string" && body.discord_username.trim()
         ? body.discord_username.trim()
         : null;
-    const discordUserId = isTrustedBot ? bodyDiscordUserId : session!.discordId;
-    const discordUsername = isTrustedBot
-      ? bodyDiscordUsername
-      : session!.username;
+
+    if (isTrustedBot) {
+      discordUserId = bodyDiscordUserId;
+      discordUsername = bodyDiscordUsername;
+    }
     const notes =
       typeof body.notes === "string" && body.notes.trim() ? body.notes.trim() : null;
     const status =
