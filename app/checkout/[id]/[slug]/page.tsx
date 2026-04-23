@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { products } from "@/data/products";
-import { formatCurrency, parsePrice } from "@/lib/site";
+import { formatCurrency, getMonogram, parsePrice } from "@/lib/site";
 
 type CartItem = {
   id: number;
@@ -63,74 +63,100 @@ export default function CheckoutPage() {
 
   if (!product) {
     return (
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        <div className="space-y-4">
-          <h1 className="text-3xl font-semibold text-white">Product not found.</h1>
-          <p className="max-w-xl text-sm text-white/70">
-            This product does not exist or the link is no longer valid. Return
-            to the catalog to keep browsing.
+      <main className="space-y-6">
+        <section className="ui-panel p-8 sm:p-10">
+          <h1 className="text-3xl font-semibold tracking-tight text-white">
+            Product not found
+          </h1>
+          <p className="mt-4 max-w-xl text-sm text-white/70">
+            This product does not exist or the link is no longer valid.
           </p>
-          <div className="flex flex-wrap gap-3">
-            <Link
-              href="/products"
-              className="rounded-lg bg-[#8b5cf6] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
-            >
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/products" className="ui-button-primary">
               Browse products
             </Link>
-            <Link
-              href="/ticket"
-              className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-white/70 transition hover:border-[#8b5cf6]/50 hover:text-white"
-            >
-              Need help?
+            <Link href="/ticket" className="ui-button-secondary">
+              Open support
             </Link>
           </div>
-        </div>
+        </section>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <div>
-        <Link
-          href={`/products/${product.category.toLowerCase().replace(/\s+/g, "-")}`}
-          className="text-sm text-white/60 transition hover:text-white"
-        >
-          Back to {product.category}
-        </Link>
+    <main className="space-y-8">
+      <section className="grid gap-8 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="max-w-2xl">
+          <Link
+            href={`/products/${product.category.toLowerCase().replace(/\s+/g, "-")}`}
+            className="ui-overline transition hover:text-white"
+          >
+            Back to {product.category}
+          </Link>
+          <p className="ui-overline ui-overline-accent mt-6">Checkout</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white">
+            {product.name}
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
+            Pick a quantity. Add it to the cart.
+          </p>
+        </div>
 
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">
-          {product.name}
-        </h1>
-        <p className="mt-3 max-w-xl text-sm text-white/70">
-          Pick a quantity. Add it to the cart.
-        </p>
-      </div>
+        <aside className="ui-panel p-5">
+          <p className="ui-overline">System</p>
 
-      <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.15fr)_420px]">
-        <div className="rounded-xl border border-white/10 bg-transparent p-6">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+          <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="ui-overline">Category</span>
+              <span className="font-mono text-sm text-white/90">
                 {product.category}
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                {product.name}
-              </h2>
-              <p className="mt-4 text-sm text-white/70">{product.description}</p>
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+              <span className="ui-overline">Product</span>
+              <span className="font-mono text-sm text-white/90">
+                #{product.id}
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+              <span className="ui-overline">Route</span>
+              <span className="font-mono text-sm uppercase tracking-[0.16em] text-[#8b5cf6]">
+                cart / discord
+              </span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_360px]">
+        <div className="ui-panel p-7">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex items-start gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 font-mono text-sm uppercase text-[#8b5cf6]">
+                {getMonogram(product.name)}
+              </div>
+
+              <div className="max-w-2xl">
+                <p className="ui-overline">{product.category}</p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                  {product.name}
+                </h2>
+                <p className="mt-4 text-sm leading-6 text-white/70">
+                  {product.description}
+                </p>
+              </div>
             </div>
 
-            <div className="rounded-xl border border-white/10 p-4 text-left lg:min-w-[180px] lg:text-right">
-              <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-                Unit price
-              </p>
-              <p className="mt-2 font-mono text-2xl text-white/90">
+            <div className="rounded-2xl border border-white/10 p-4 text-left lg:min-w-[190px] lg:text-right">
+              <p className="ui-overline">Unit price</p>
+              <p className="mt-2 font-mono text-3xl text-[#8b5cf6]">
                 {formatCurrency(unitPrice)}
               </p>
             </div>
           </div>
 
-          <div className="mt-8 rounded-xl border border-white/10 p-5">
+          <div className="mt-8 rounded-2xl border border-white/10 p-5">
             <p className="text-lg font-semibold tracking-tight text-white">
               Notes
             </p>
@@ -145,44 +171,37 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <aside className="rounded-xl border border-white/10 bg-transparent p-6">
-          <div>
-            <p className="text-xl font-semibold tracking-tight text-white">
-              Summary
-            </p>
-            <p className="mt-2 text-sm text-white/60">
-              Review the order before checkout.
-            </p>
-          </div>
+        <aside className="ui-panel p-6 lg:sticky lg:top-28 lg:h-fit">
+          <p className="ui-overline ui-overline-accent">Summary</p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+            Order
+          </h2>
+          <p className="mt-2 text-sm text-white/60">
+            Review the order before checkout.
+          </p>
 
           <div className="mt-8 space-y-4">
-            <div className="flex items-center justify-between gap-4 text-white/70">
-              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-                Product
-              </span>
+            <div className="flex items-start justify-between gap-4">
+              <span className="ui-overline">Product</span>
               <span className="max-w-[180px] text-right text-sm text-white/90">
                 {product.name}
               </span>
             </div>
-            <div className="flex items-center justify-between text-white/70">
-              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-                Unit price
-              </span>
+            <div className="flex items-center justify-between">
+              <span className="ui-overline">Unit price</span>
               <span className="font-mono text-sm text-white/90">
                 {formatCurrency(unitPrice)}
               </span>
             </div>
           </div>
 
-          <div className="mt-6">
-            <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-              Quantity
-            </p>
+          <div className="mt-6 border-t border-white/5 pt-6">
+            <p className="ui-overline">Quantity</p>
             <div className="mt-3 flex w-fit items-center gap-3 rounded-xl border border-white/10 p-2">
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white disabled:opacity-40"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
                 disabled={quantity === 1}
               >
                 -
@@ -200,21 +219,16 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-xl border border-white/10 p-5">
+          <div className="mt-6 rounded-2xl border border-white/10 p-5">
             <div className="flex items-center justify-between">
-              <span className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-                Total
-              </span>
+              <span className="ui-overline">Total</span>
               <span className="font-mono text-3xl text-[#8b5cf6]">
                 {formatCurrency(total)}
               </span>
             </div>
           </div>
 
-          <button
-            onClick={handleAddToCart}
-            className="mt-8 w-full rounded-lg bg-[#8b5cf6] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
-          >
+          <button onClick={handleAddToCart} className="ui-button-primary mt-8 w-full">
             Add to cart
           </button>
 
