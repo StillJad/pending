@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { getSessionFromRequest } from "@/lib/auth";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -27,6 +28,18 @@ function buildProductSummary(items: OrderItem[]) {
 
 export async function POST(req: Request) {
   try {
+    const session = await getSessionFromRequest(req);
+
+    if (!session || !session.guildMember) {
+      return Response.json(
+        {
+          success: false,
+          error: "login required",
+        },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
@@ -39,10 +52,8 @@ export async function POST(req: Request) {
       typeof body.payment_method === "string" && body.payment_method.trim()
         ? body.payment_method.trim()
         : null;
-    const discordUserId =
-      typeof body.discord_user_id === "string" ? body.discord_user_id : null;
-    const discordUsername =
-      typeof body.discord_username === "string" ? body.discord_username : null;
+    const discordUserId = session.discordId;
+    const discordUsername = session.username;
     const notes =
       typeof body.notes === "string" && body.notes.trim() ? body.notes.trim() : null;
     const status =
