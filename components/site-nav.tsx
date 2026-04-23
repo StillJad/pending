@@ -16,7 +16,7 @@ export function SiteNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex items-center gap-6 text-sm text-white/70">
+    <nav className="flex flex-wrap items-center gap-4 text-sm">
       {NAV_LINKS.map((item) => {
         const active = pathname ? isActive(pathname, item.href) : false;
 
@@ -25,9 +25,13 @@ export function SiteNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`hover:text-white ${active ? "text-white" : ""}`}
+            className={`transition ${
+              active
+                ? "font-medium text-[#8b5cf6]"
+                : "text-white/70 hover:text-[#8b5cf6]"
+            }`}
           >
-            <span>{item.label}</span>
+            {item.label}
           </Link>
         );
       })}
