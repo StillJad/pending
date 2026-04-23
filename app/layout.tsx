@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import Script from "next/script";
 import { SiteNav } from "@/components/site-nav";
 import { BRAND_NAME, BRAND_SUBLABEL, SITE_DESCRIPTION } from "@/lib/site";
 import { getSession } from "@/lib/auth";
@@ -88,6 +89,10 @@ export default async function RootLayout({
             </div>
           </footer>
         </div>
+        <Script
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
