@@ -10,6 +10,7 @@ import {
   getOAuthStateFromCookieStore,
   setSession,
 } from "@/lib/auth";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
@@ -24,6 +25,20 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const verified = await verifyTurnstileToken(
+      storedState.turnstileToken,
+      request
+    );
+
+    if (!verified) {
+      const failureUrl = new URL("/login", request.url);
+      failureUrl.searchParams.set("error", "turnstile_failed");
+      failureUrl.searchParams.set("next", storedState.next);
+      await clearOAuthState();
+      await clearSession();
+      return NextResponse.redirect(failureUrl);
+    }
+
     const token = await exchangeDiscordCode(code);
     const user = await fetchDiscordUser(token.access_token);
     const guildMember = await checkDiscordGuildMembership(token.access_token);
