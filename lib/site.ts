@@ -1,6 +1,6 @@
 export const BRAND_NAME = "Pending";
 export const SITE_DESCRIPTION =
-  "Premium pricing, tracking, and Discord-based ordering.";
+  "Digital goods, pricing, tracking, and Discord-based ordering.";
 export const DISCORD_INVITE_URL = "https://discord.gg/pending";
 
 export const NAV_LINKS = [
@@ -24,14 +24,4 @@ export function formatCurrency(value: number) {
     style: "currency",
     currency: "USD",
   }).format(value);
-}
-
-export function getMonogram(value: string) {
-  const parts = value.trim().split(/\s+/).slice(0, 2);
-  const initials = parts
-    .map((part) => part.charAt(0).toUpperCase())
-    .join("")
-    .slice(0, 2);
-
-  return initials || value.slice(0, 2).toUpperCase();
 }
