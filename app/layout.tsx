@@ -1,33 +1,81 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+import { Manrope, Space_Grotesk } from "next/font/google";
+import { SiteNav } from "@/components/site-nav";
+import { BRAND_NAME, SITE_DESCRIPTION } from "@/lib/site";
+import "./globals.css";
 
-export default function NotFound() {
+const bodyFont = Manrope({
+  subsets: ["latin"],
+  variable: "--font-body",
+  display: "swap",
+});
+
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-display",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: BRAND_NAME,
+    template: `%s | ${BRAND_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <div className="space-y-4">
-        <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-          404
-        </p>
-        <h1 className="text-3xl font-semibold tracking-tight text-white">
-          Page not found
-        </h1>
-        <p className="max-w-xl text-sm text-white/70">
-          The page is gone or the link is wrong.
-        </p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/"
-            className="rounded-lg bg-[#8b5cf6] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
-          >
-            Back home
-          </Link>
-          <Link
-            href="/products"
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-white/70 transition hover:border-[#8b5cf6]/50 hover:text-white"
-          >
-            Browse products
-          </Link>
+    <html lang="en" className={`${bodyFont.variable} ${displayFont.variable}`}>
+      <body>
+        <div className="min-h-screen bg-[#0b0b0f] text-white">
+          <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-6xl items-center justify-between border-b border-white/10 px-4 py-4">
+              <Link href="/" className="group inline-flex min-w-0 items-center gap-4">
+                <span className="font-semibold text-lg tracking-wide">{BRAND_NAME}</span>
+              </Link>
+
+              <SiteNav />
+            </div>
+          </header>
+
+          <div className="mx-auto w-full max-w-6xl px-4 py-10">
+            {children}
+          </div>
+
+          <footer className="relative z-10 px-4 pb-8 sm:px-6 lg:px-8">
+            <div className="mx-auto flex max-w-6xl flex-col gap-4 border-t border-white/10 px-4 py-6 text-sm text-white/60">
+              <div>
+                <p className="font-semibold text-white">{BRAND_NAME}</p>
+                <p>Digital goods. Fast delivery.</p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-4 text-sm text-white/55">
+                <Link href="/products" className="hover:text-white">
+                  Buy
+                </Link>
+                <Link href="/ticket" className="hover:text-white">
+                  Support
+                </Link>
+                <Link href="/orders" className="hover:text-white">
+                  Tracking
+                </Link>
+                <Link href="/Tos" className="hover:text-white">
+                  Terms
+                </Link>
+                <Link href="/PrivPolicy" className="hover:text-white">
+                  Privacy
+                </Link>
+              </div>
+            </div>
+          </footer>
         </div>
-      </div>
-    </main>
+      </body>
+    </html>
   );
 }
