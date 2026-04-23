@@ -59,7 +59,12 @@ module.exports = {
     try {
       const response = await fetch(`${baseUrl}/api/order`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(process.env.INTERNAL_BOT_API_KEY
+            ? { "x-internal-bot-key": process.env.INTERNAL_BOT_API_KEY }
+            : {}),
+        },
         body: JSON.stringify({
           order_id: orderId,
           status,
