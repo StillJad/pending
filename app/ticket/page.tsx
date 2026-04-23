@@ -24,63 +24,81 @@ const supportDetails = [
 
 export default function TicketPage() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <section className="max-w-2xl">
-        <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
-          Support
-        </p>
-        <h1 className="mt-4 text-3xl font-semibold tracking-tight text-white">
-          Use Discord
-        </h1>
-        <p className="mt-3 max-w-xl text-sm text-white/70">
-          Orders and support run through Discord. Start a ticket and keep it
-          simple.
-        </p>
+    <main className="space-y-8">
+      <section className="grid gap-8 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="max-w-2xl">
+          <p className="ui-overline ui-overline-accent">Support</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white">
+            Use Discord
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
+            Orders and support run through Discord. Start a ticket and keep it
+            simple.
+          </p>
 
-        <div className="mt-7 flex flex-wrap gap-3">
-          <a
-            href={DISCORD_INVITE_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-lg bg-[#8b5cf6] px-4 py-2 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
-          >
-            Join Discord
-          </a>
-          <Link
-            href="/products"
-            className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-white/70 transition hover:border-[#8b5cf6]/50 hover:text-white"
-          >
-            Browse products
-          </Link>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <a
+              href={DISCORD_INVITE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="ui-button-primary"
+            >
+              Join Discord
+            </a>
+            <Link href="/products" className="ui-button-secondary">
+              Browse products
+            </Link>
+          </div>
         </div>
+
+        <aside className="ui-panel p-5">
+          <p className="ui-overline">Channel</p>
+          <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="ui-overline">Flow</span>
+              <span className="font-mono text-sm uppercase tracking-[0.16em] text-[#8b5cf6]">
+                discord
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+              <span className="ui-overline">Support</span>
+              <span className="font-mono text-sm text-white/90">live</span>
+            </div>
+            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+              <span className="ui-overline">Orders</span>
+              <span className="font-mono text-sm text-white/90">linked</span>
+            </div>
+          </div>
+        </aside>
       </section>
 
-      <section className="mt-10 grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-3">
         {supportSteps.map((step, index) => (
-          <div
-            key={step.title}
-            className="rounded-xl border border-white/10 bg-transparent p-5 transition hover:border-[#8b5cf6]/50 hover:shadow-[0_0_12px_rgba(139,92,246,0.12)]"
-          >
-            <p className="font-mono text-xs uppercase tracking-[0.12em] text-white/40">
+          <div key={step.title} className="ui-panel ui-panel-hover p-6">
+            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5cf6]">
               0{index + 1}
             </p>
-            <h2 className="mt-3 text-lg font-semibold tracking-tight text-white">
+            <h2 className="mt-6 text-2xl font-semibold tracking-tight text-white">
               {step.title}
             </h2>
-            <p className="mt-2 text-sm text-white/70">{step.copy}</p>
+            <p className="mt-3 text-sm leading-6 text-white/70">{step.copy}</p>
           </div>
         ))}
       </section>
 
-      <section className="mt-6 rounded-xl border border-white/10 p-5">
-        <h2 className="text-lg font-semibold tracking-tight text-white">
-          Include
+      <section className="ui-panel p-6">
+        <p className="ui-overline">Include</p>
+        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+          Keep it direct
         </h2>
-        <div className="mt-4 space-y-3">
+
+        <div className="mt-6 grid gap-3 md:grid-cols-3">
           {supportDetails.map((detail) => (
-            <div key={detail} className="flex items-start gap-3 text-sm text-white/70">
-              <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-white/40" />
-              <span>{detail}</span>
+            <div
+              key={detail}
+              className="rounded-2xl border border-white/10 p-4 text-sm text-white/70"
+            >
+              {detail}
             </div>
           ))}
         </div>
