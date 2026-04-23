@@ -24,16 +24,16 @@ const supportDetails = [
 
 export default function TicketPage() {
   return (
-    <main className="space-y-8">
-      <section className="grid gap-8 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <main className="space-y-10">
+      <section className="grid gap-10 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
         <div className="max-w-2xl">
           <p className="ui-overline ui-overline-accent">Support</p>
           <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white">
             Use Discord
           </h1>
           <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
-            Orders and support run through Discord. Start a ticket and keep it
-            simple.
+            Orders and support run through Discord. Start a ticket and keep the
+            details direct.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -51,57 +51,78 @@ export default function TicketPage() {
           </div>
         </div>
 
-        <aside className="ui-panel p-5">
+        <aside className="rounded-2xl border border-white/10 bg-black/20 p-5">
           <p className="ui-overline">Channel</p>
-          <div className="mt-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="ui-overline">Flow</span>
-              <span className="font-mono text-sm uppercase tracking-[0.16em] text-[#8b5cf6]">
+          <div className="mt-5 space-y-5">
+            <div>
+              <p className="font-mono text-xl uppercase tracking-[0.16em] text-[#8b5cf6]">
                 discord
-              </span>
+              </p>
+              <p className="mt-2 text-sm text-white/55">
+                Support and fulfillment stay in one place.
+              </p>
             </div>
-            <div className="flex items-center justify-between border-t border-white/5 pt-4">
-              <span className="ui-overline">Support</span>
-              <span className="font-mono text-sm text-white/90">live</span>
-            </div>
-            <div className="flex items-center justify-between border-t border-white/5 pt-4">
-              <span className="ui-overline">Orders</span>
-              <span className="font-mono text-sm text-white/90">linked</span>
+
+            <div className="border-t border-white/5 pt-4">
+              <div className="flex items-center justify-between">
+                <span className="ui-overline">Support</span>
+                <span className="font-mono text-sm text-white/90">live</span>
+              </div>
+              <div className="mt-3 flex items-center justify-between">
+                <span className="ui-overline">Orders</span>
+                <span className="font-mono text-sm text-white/90">linked</span>
+              </div>
             </div>
           </div>
         </aside>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        {supportSteps.map((step, index) => (
-          <div key={step.title} className="ui-panel ui-panel-hover p-6">
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5cf6]">
-              0{index + 1}
-            </p>
-            <h2 className="mt-6 text-2xl font-semibold tracking-tight text-white">
-              {step.title}
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-white/70">{step.copy}</p>
+      <section className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+        <div className="ui-panel p-6 sm:p-7">
+          <p className="ui-overline">Flow</p>
+          <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+            Open a ticket
+          </h2>
+
+          <div className="mt-8 space-y-0">
+            {supportSteps.map((step, index) => (
+              <div
+                key={step.title}
+                className="grid gap-4 border-t border-white/5 py-5 first:border-t-0 first:pt-0 md:grid-cols-[64px_minmax(0,1fr)]"
+              >
+                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5cf6]">
+                  0{index + 1}
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium tracking-tight text-white">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 max-w-lg text-sm leading-6 text-white/68">
+                    {step.copy}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </section>
-
-      <section className="ui-panel p-6">
-        <p className="ui-overline">Include</p>
-        <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-          Keep it direct
-        </h2>
-
-        <div className="mt-6 grid gap-3 md:grid-cols-3">
-          {supportDetails.map((detail) => (
-            <div
-              key={detail}
-              className="rounded-2xl border border-white/10 p-4 text-sm text-white/70"
-            >
-              {detail}
-            </div>
-          ))}
         </div>
+
+        <aside className="ui-panel p-6">
+          <p className="ui-overline">Include</p>
+          <h2 className="mt-3 text-xl font-semibold tracking-tight text-white">
+            Keep it direct
+          </h2>
+
+          <div className="mt-6 space-y-3">
+            {supportDetails.map((detail) => (
+              <div
+                key={detail}
+                className="rounded-xl border border-white/10 px-4 py-3 text-sm text-white/68"
+              >
+                {detail}
+              </div>
+            ))}
+          </div>
+        </aside>
       </section>
     </main>
   );
