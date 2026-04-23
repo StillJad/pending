@@ -16,7 +16,7 @@ export function SiteNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap items-center gap-4 text-sm">
+    <nav className="flex flex-wrap items-center gap-6 text-sm">
       {NAV_LINKS.map((item) => {
         const active = pathname ? isActive(pathname, item.href) : false;
 
@@ -27,8 +27,8 @@ export function SiteNav() {
             aria-current={active ? "page" : undefined}
             className={`transition ${
               active
-                ? "font-medium text-[#8b5cf6]"
-                : "text-white/70 hover:text-[#8b5cf6]"
+                ? "text-[#8b5cf6]"
+                : "text-white/60 hover:text-white"
             }`}
           >
             {item.label}
