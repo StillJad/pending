@@ -44,9 +44,3 @@ export default function RootLayout({
     </html>
   );
 }
-
-        {children}
-      </body>
-    </html>
-  );
-}
