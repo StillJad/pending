@@ -4,7 +4,7 @@ import { getSessionFromCookieStore, normalizeReturnToPath } from "@/lib/auth";
 export async function proxy(request: NextRequest) {
   const session = await getSessionFromCookieStore(request.cookies);
 
-  if (session?.guildMember) {
+  if (session) {
     return NextResponse.next();
   }
 
@@ -14,10 +14,6 @@ export async function proxy(request: NextRequest) {
   );
 
   loginUrl.searchParams.set("next", next);
-
-  if (session && !session.guildMember) {
-    loginUrl.searchParams.set("error", "guild_required");
-  }
 
   return NextResponse.redirect(loginUrl);
 }
