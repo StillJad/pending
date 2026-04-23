@@ -1,77 +1,83 @@
 import Link from "next/link";
 import { BRAND_NAME, DISCORD_INVITE_URL } from "@/lib/site";
 
+const routes = [
+  {
+    href: "/products",
+    title: "Buy",
+    copy: "Browse products and current pricing.",
+  },
+  {
+    href: "/ticket",
+    title: "Support",
+    copy: "Open a ticket through Discord.",
+  },
+  {
+    href: "/orders",
+    title: "Tracking",
+    copy: "Check your order status.",
+  },
+] as const;
+
 export default function Home() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-12">
-      <section className="space-y-6">
-        <h1 className="text-4xl font-semibold tracking-tight text-white">
+    <main className="mx-auto max-w-6xl px-4 py-12 sm:py-14">
+      <section className="max-w-2xl">
+        <p className="text-sm font-medium text-[#8b5cf6]">Digital storefront</p>
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
           {BRAND_NAME}
         </h1>
-
-        <p className="text-white/70 max-w-xl">
-          Simple storefront for digital goods with fast Discord-based delivery.
+        <p className="mt-4 max-w-xl text-base text-white/70">
+          Digital goods, clear pricing, and Discord-based delivery.
         </p>
 
-        <div className="flex gap-3">
+        <div className="mt-6 flex flex-wrap gap-3">
           <Link
             href="/products"
-            className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:opacity-90"
+            className="rounded-lg bg-[#8b5cf6] px-4 py-2.5 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_18px_rgba(139,92,246,0.25)]"
           >
             Browse
           </Link>
 
           <Link
             href="/ticket"
-            className="px-4 py-2 rounded-lg border border-white/20 text-sm text-white/80 hover:text-white"
+            className="rounded-lg border border-white/15 px-4 py-2.5 text-sm font-medium text-white/80 transition hover:border-[#8b5cf6]/40 hover:text-white"
           >
             Support
           </Link>
         </div>
+
+        <p className="mt-4 text-sm text-white/50">
+          Orders and support are handled through Discord.
+        </p>
       </section>
 
-      <section className="mt-12 grid gap-4 md:grid-cols-3">
-        <Link
-          href="/products"
-          className="border border-white/10 rounded-xl p-5 hover:border-white/30 transition"
-        >
-          <h2 className="text-lg font-medium text-white">Buy</h2>
-          <p className="text-sm text-white/60 mt-2">
-            Browse products and checkout fast.
-          </p>
-        </Link>
-
-        <Link
-          href="/ticket"
-          className="border border-white/10 rounded-xl p-5 hover:border-white/30 transition"
-        >
-          <h2 className="text-lg font-medium text-white">Support</h2>
-          <p className="text-sm text-white/60 mt-2">
-            Open a ticket through Discord.
-          </p>
-        </Link>
-
-        <Link
-          href="/orders"
-          className="border border-white/10 rounded-xl p-5 hover:border-white/30 transition"
-        >
-          <h2 className="text-lg font-medium text-white">Tracking</h2>
-          <p className="text-sm text-white/60 mt-2">
-            Check your order status.
-          </p>
-        </Link>
+      <section className="mt-10 grid gap-4 md:grid-cols-3">
+        {routes.map((route) => (
+          <Link
+            key={route.href}
+            href={route.href}
+            className="group rounded-xl border border-white/10 bg-white/[0.02] p-5 transition hover:border-[#8b5cf6]/50 hover:bg-white/[0.03] hover:shadow-[0_0_18px_rgba(139,92,246,0.12)]"
+          >
+            <h2 className="text-lg font-medium text-white transition group-hover:text-[#8b5cf6]">
+              {route.title}
+            </h2>
+            <p className="mt-2 text-sm text-white/60">{route.copy}</p>
+            <p className="mt-6 text-sm text-[#8b5cf6]">Open</p>
+          </Link>
+        ))}
       </section>
 
-      <section className="mt-12 text-sm text-white/60">
+      <div className="mt-8 text-sm text-white/50">
         <a
           href={DISCORD_INVITE_URL}
           target="_blank"
           rel="noreferrer"
-          className="hover:text-white"
+          className="text-white/60 transition hover:text-[#8b5cf6]"
         >
-          Join Discord
+          Join the Discord server
         </a>
-      </section>
+      </div>
     </main>
   );
 }
