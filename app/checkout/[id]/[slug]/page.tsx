@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { Turnstile } from "@/components/turnstile";
 import { products } from "@/data/products";
 import { formatCurrency, getMonogram, parsePrice } from "@/lib/site";
 
@@ -24,6 +25,8 @@ export default function CheckoutPage() {
   const params = useParams<{ id: string; slug: string }>();
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   const id = params?.id ?? "";
   const slug = params?.slug ?? "";
@@ -38,7 +41,7 @@ export default function CheckoutPage() {
   const total = unitPrice * quantity;
 
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!product || !turnstileToken) return;
 
     const existingCart = JSON.parse(
       localStorage.getItem("pending_cart") || "[]"
@@ -58,6 +61,8 @@ export default function CheckoutPage() {
     }
 
     localStorage.setItem("pending_cart", JSON.stringify(existingCart));
+    setTurnstileToken("");
+    setTurnstileResetKey((value) => value + 1);
     router.push("/cart");
   };
 
@@ -228,7 +233,17 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <button onClick={handleAddToCart} className="ui-button-primary mt-8 w-full">
+          <Turnstile
+            className="mt-6"
+            onVerify={setTurnstileToken}
+            resetKey={turnstileResetKey}
+          />
+
+          <button
+            onClick={handleAddToCart}
+            className="ui-button-primary mt-8 w-full disabled:cursor-not-allowed disabled:opacity-45"
+            disabled={!turnstileToken}
+          >
             Add to cart
           </button>
 
