@@ -24,18 +24,27 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   if (categoryProducts.length === 0) {
     return (
-      <main className="mx-auto max-w-6xl px-4 py-10">
-        <section className="space-y-4">
-          <h1 className="text-3xl font-semibold text-white">Category not found</h1>
-          <p className="text-white/70 max-w-xl">
-            No products found for {categoryName}.
+      <main className="space-y-6">
+        <section className="ui-panel p-8 sm:p-10">
+          <Link
+            href="/products"
+            className="ui-overline transition hover:text-white"
+          >
+            Back to categories
+          </Link>
+          <h1 className="mt-6 text-3xl font-semibold tracking-tight text-white">
+            Category not found
+          </h1>
+          <p className="mt-4 max-w-xl text-sm text-white/70">
+            No products were found for {categoryName}. Go back and try another
+            category.
           </p>
-          <div className="flex gap-3">
-            <Link href="/products" className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium">
-              Back
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link href="/products" className="ui-button-primary">
+              Back to catalog
             </Link>
-            <Link href="/ticket" className="px-4 py-2 rounded-lg border border-white/20 text-white/80 text-sm">
-              Support
+            <Link href="/ticket" className="ui-button-secondary">
+              Open support
             </Link>
           </div>
         </section>
@@ -46,51 +55,72 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const prices = categoryProducts.map((product) => parsePrice(product.price));
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
-      <section className="space-y-4">
-        <Link
-          href="/products"
-          className="text-sm text-white/60 hover:text-white"
-        >
-          ← Back to products
-        </Link>
-
-        <h1 className="text-3xl font-semibold text-white">{categoryName}</h1>
-
-        <p className="text-white/70 max-w-xl">
-          Browse available products and choose what you need.
-        </p>
-
-        <div className="text-sm text-white/60">
-          {categoryProducts.length} products
+    <main className="space-y-8">
+      <section className="grid gap-8 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <div className="max-w-2xl">
+          <Link
+            href="/products"
+            className="ui-overline transition hover:text-white"
+          >
+            Back to categories
+          </Link>
+          <p className="ui-overline ui-overline-accent mt-6">{categoryName}</p>
+          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.06em] text-white">
+            {categoryName}
+          </h1>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-white/70">
+            Open a product. Move straight to checkout.
+          </p>
         </div>
+
+        <aside className="ui-panel p-5">
+          <p className="ui-overline">Index</p>
+
+          <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="ui-overline">Products</span>
+              <span className="font-mono text-xl text-white/90">
+                {categoryProducts.length.toString().padStart(2, "0")}
+              </span>
+            </div>
+            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+              <span className="ui-overline">Start</span>
+              <span className="font-mono text-base text-[#8b5cf6]">
+                {formatCurrency(Math.min(...prices))}
+              </span>
+            </div>
+          </div>
+        </aside>
       </section>
 
-      <section className="grid gap-4 xl:grid-cols-2">
-        {categoryProducts.map((product, index) => (
+      <section className="grid gap-4">
+        {categoryProducts.map((product) => (
           <Link
             key={product.id}
             href={`/checkout/${product.id}/${product.slug}`}
-            className="border border-white/10 rounded-xl p-5 hover:border-white/30 transition"
+            className="ui-panel ui-panel-hover block p-6"
           >
-            <div className="flex flex-col gap-4">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h2 className="text-lg font-medium text-white">{product.name}</h2>
-                  <p className="text-sm text-white/60 mt-1">
-                    {product.description}
-                  </p>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-white text-lg font-medium">
-                    {formatCurrency(parsePrice(product.price))}
-                  </p>
-                </div>
+            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_180px] lg:items-start">
+              <div>
+                <p className="ui-overline">#{product.id}</p>
+                <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
+                  {product.name}
+                </h2>
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/68">
+                  {product.description}
+                </p>
               </div>
 
-              <div className="text-sm text-white/70">
-                View product
+              <div className="border-t border-white/10 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+                <p className="ui-overline">Price</p>
+                <p className="mt-2 font-mono text-3xl text-[#8b5cf6]">
+                  {formatCurrency(parsePrice(product.price))}
+                </p>
+
+                <div className="mt-8 border-t border-white/5 pt-4">
+                  <p className="ui-overline">Action</p>
+                  <p className="mt-2 text-sm text-white/65">Open checkout</p>
+                </div>
               </div>
             </div>
           </Link>
