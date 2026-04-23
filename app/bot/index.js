@@ -467,6 +467,9 @@ async function updateOrderById(orderId, updates) {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
+      ...(process.env.INTERNAL_BOT_API_KEY
+        ? { "x-internal-bot-key": process.env.INTERNAL_BOT_API_KEY }
+        : {}),
     },
     body: JSON.stringify({
       order_id: orderId,
@@ -2294,6 +2297,9 @@ if (interaction.customId.startsWith("deny_vouch:")) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            ...(process.env.INTERNAL_BOT_API_KEY
+              ? { "x-internal-bot-key": process.env.INTERNAL_BOT_API_KEY }
+              : {}),
           },
           body: JSON.stringify({
             discord_user_id: interaction.user.id,
