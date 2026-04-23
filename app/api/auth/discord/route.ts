@@ -6,16 +6,47 @@ import {
 } from "@/lib/auth";
 
 export async function GET(request: NextRequest) {
+  const loginUrl = new URL("/login", request.url);
+  loginUrl.searchParams.set(
+    "next",
+    normalizeReturnToPath(request.nextUrl.searchParams.get("next"))
+  );
+
+  return NextResponse.redirect(loginUrl);
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const next = normalizeReturnToPath(request.nextUrl.searchParams.get("next"));
-    const state = await setOAuthState(next);
-    return NextResponse.redirect(getDiscordAuthorizeUrl(state.state));
+    const body = await request.json();
+    const next = normalizeReturnToPath(
+      typeof body.next === "string" ? body.next : null
+    );
+    const turnstileToken =
+      typeof body.turnstileToken === "string" ? body.turnstileToken : "";
+
+    if (!turnstileToken) {
+      return Response.json(
+        {
+          error: "Verification failed. Try again.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const state = await setOAuthState(next, turnstileToken);
+
+    return Response.json({
+      success: true,
+      url: getDiscordAuthorizeUrl(state.state),
+    });
   } catch (error) {
     console.error("Discord auth redirect failed:", error);
 
-    const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("error", "config");
-
-    return NextResponse.redirect(loginUrl);
+    return Response.json(
+      {
+        error: "Discord login is not configured yet.",
+      },
+      { status: 500 }
+    );
   }
 }
