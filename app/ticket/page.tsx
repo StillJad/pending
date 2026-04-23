@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TicketAccessPanel } from "@/components/ticket-access-panel";
 import { DISCORD_INVITE_URL } from "@/lib/site";
 
 const supportSteps = [
@@ -74,6 +75,8 @@ export default function TicketPage() {
               </div>
             </div>
           </div>
+
+          <TicketAccessPanel />
         </aside>
       </section>
 
