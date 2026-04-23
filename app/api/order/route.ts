@@ -175,18 +175,6 @@ export async function PATCH(req: Request) {
       updates.status = body.status.trim() || "pending";
     }
 
-    if (typeof body.product === "string") {
-      updates.product = body.product.trim() || null;
-    }
-
-    if (typeof body.vouched_by === "string") {
-      updates.vouched_by = body.vouched_by.trim() || null;
-    }
-
-    if (typeof body.vouch_note === "string") {
-      updates.vouch_note = body.vouch_note.trim() || null;
-    }
-
     if (typeof body.notes === "string") {
       updates.notes = body.notes.trim() || null;
     }
