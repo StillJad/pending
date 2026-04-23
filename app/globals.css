@@ -4,6 +4,11 @@
   color-scheme: dark;
 }
 
+@theme inline {
+  --font-sans: var(--font-site-sans);
+  --font-mono: var(--font-site-mono);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -14,8 +19,12 @@ html {
 
 body {
   min-height: 100vh;
-  background: linear-gradient(180deg, #05070d 0%, #070911 100%);
-  color: #f5f5f5;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(139, 92, 246, 0.08), transparent 40%),
+    linear-gradient(180deg, #0b0b0f 0%, #0d0d12 100%);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-site-sans), system-ui, sans-serif;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -39,7 +48,7 @@ button:disabled {
 }
 
 :focus-visible {
-  outline: 2px solid rgba(139, 92, 246, 0.9);
+  outline: 2px solid rgba(139, 92, 246, 0.85);
   outline-offset: 2px;
 }
 
@@ -49,10 +58,10 @@ button:disabled {
 }
 
 ::-webkit-scrollbar-track {
-  background: #05070d;
+  background: #0b0b0f;
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(139, 92, 246, 0.45);
+  background: rgba(139, 92, 246, 0.4);
 }
