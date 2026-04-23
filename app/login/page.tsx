@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { LoginAuthPanel } from "@/components/login-auth-panel";
 import { DISCORD_INVITE_URL } from "@/lib/site";
 import { getSession, normalizeReturnToPath } from "@/lib/auth";
 
@@ -17,6 +18,8 @@ function getErrorMessage(error: string | undefined) {
       return "Discord login failed. Try again.";
     case "config":
       return "Discord login is not configured yet.";
+    case "turnstile_failed":
+      return "Verification failed. Try again.";
     default:
       return null;
   }
@@ -27,7 +30,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const next = normalizeReturnToPath(params.next);
   const viewer = await getSession();
   const message = getErrorMessage(params.error);
-  const continueHref = `/api/auth/discord?next=${encodeURIComponent(next)}`;
   const primaryHref = next === "/" ? "/products" : next;
 
   return (
@@ -107,45 +109,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               </div>
             </>
           ) : (
-            <>
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
-                Login
-              </p>
-              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                Discord authentication
-              </h2>
-              <p className="mt-3 text-sm leading-6 text-white/70">
-                Use your Discord account to continue.
-              </p>
-
-              {message ? (
-                <p className="mt-4 text-sm text-[#c4b5fd]">{message}</p>
-              ) : null}
-
-              <div className="mt-6 flex flex-col items-start gap-3">
-                {params.error === "guild_required" ? (
-                  <a
-                    href={DISCORD_INVITE_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="ui-button-secondary"
-                  >
-                    Join Discord server
-                  </a>
-                ) : null}
-
-                <a
-                  href={continueHref}
-                  className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)]"
-                >
-                  Continue with Discord
-                </a>
-              </div>
-
-              <p className="mt-5 text-sm text-white/50">
-                We only use Discord to verify access.
-              </p>
-            </>
+            <LoginAuthPanel
+              inviteUrl={DISCORD_INVITE_URL}
+              message={message}
+              next={next}
+              requiresGuildJoin={params.error === "guild_required"}
+            />
           )}
         </aside>
       </section>
