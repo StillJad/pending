@@ -283,3 +283,65 @@ export async function GET(
     );
   }
 }
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const orderId = typeof id === "string" ? id.trim() : "";
+
+    if (!orderId) {
+      return Response.json(
+        {
+          success: false,
+          error: "order id is required",
+        },
+        { status: 400 }
+      );
+    }
+
+    const { data, error } = await supabase
+      .from("orders")
+      .delete()
+      .eq("order_id", orderId)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      console.error("Failed to delete order:", error);
+      return Response.json(
+        {
+          success: false,
+          error: "failed to delete order",
+        },
+        { status: 500 }
+      );
+    }
+
+    if (!data) {
+      return Response.json(
+        {
+          success: false,
+          error: "order not found",
+        },
+        { status: 404 }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      order: data,
+    });
+  } catch (error) {
+    console.error("Order delete failed:", error);
+    return Response.json(
+      {
+        success: false,
+        error: "internal server error",
+      },
+      { status: 500 }
+    );
+  }
+}
