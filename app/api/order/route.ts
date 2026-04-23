@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   try {
     const session = await getSessionFromRequest(req);
 
-    if (!session || !session.guildMember) {
+    if (!session) {
       return Response.json(
         {
           success: false,
