@@ -87,6 +87,9 @@ async function createOrder(client, user, product, total, paymentMethod, createdB
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      ...(process.env.INTERNAL_BOT_API_KEY
+        ? { "x-internal-bot-key": process.env.INTERNAL_BOT_API_KEY }
+        : {}),
     },
    body: JSON.stringify({
   discord_user_id: user.id,
