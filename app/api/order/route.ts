@@ -1,19 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
-import { getSessionFromRequest } from "@/lib/auth";
+import { getSessionAccessError, getSessionFromRequest } from "@/lib/auth";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import { verifyTurnstileToken } from "@/lib/turnstile";
-
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
-
-const supabase =
-  supabaseUrl && supabaseKey
-    ? createClient(supabaseUrl, supabaseKey)
-    : null;
 
 type OrderItem = {
   name: string;
   quantity: number;
   price: number;
+};
+
+type OrderIdRow = {
+  order_id: string | null;
 };
 
 function buildProductSummary(items: OrderItem[]) {
@@ -29,31 +25,61 @@ function buildProductSummary(items: OrderItem[]) {
 
 export async function POST(req: Request) {
   try {
-    const session = await getSessionFromRequest(req);
+    const internalKey = req.headers.get("x-internal-bot-key");
+    const isTrustedBot = Boolean(
+      internalKey &&
+        process.env.INTERNAL_BOT_API_KEY &&
+        internalKey === process.env.INTERNAL_BOT_API_KEY
+    );
+    const session = isTrustedBot ? null : await getSessionFromRequest(req);
+    const accessError = isTrustedBot ? null : getSessionAccessError(session);
 
-    if (!session) {
+    if (accessError === "login_required") {
       return Response.json(
         {
           success: false,
-          error: "login required",
+          error: "Unauthorized",
         },
         { status: 401 }
+      );
+    }
+
+    if (accessError === "guild_required") {
+      return Response.json(
+        {
+          success: false,
+          error: "Join the Discord server to continue",
+        },
+        { status: 403 }
+      );
+    }
+
+    if (accessError === "role_required") {
+      return Response.json(
+        {
+          success: false,
+          error: "Required Discord role missing",
+        },
+        { status: 403 }
       );
     }
 
     const body = await req.json();
     const turnstileToken =
       typeof body.turnstileToken === "string" ? body.turnstileToken : "";
-    const verified = await verifyTurnstileToken(turnstileToken, req);
 
-    if (!verified) {
-      return Response.json(
-        {
-          success: false,
-          error: "Bot detected",
-        },
-        { status: 403 }
-      );
+    if (!isTrustedBot) {
+      const verified = await verifyTurnstileToken(turnstileToken, req);
+
+      if (!verified) {
+        return Response.json(
+          {
+            success: false,
+            error: "Bot detected",
+          },
+          { status: 403 }
+        );
+      }
     }
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
@@ -66,8 +92,18 @@ export async function POST(req: Request) {
       typeof body.payment_method === "string" && body.payment_method.trim()
         ? body.payment_method.trim()
         : null;
-    const discordUserId = session.discordId;
-    const discordUsername = session.username;
+    const bodyDiscordUserId =
+      typeof body.discord_user_id === "string" && body.discord_user_id.trim()
+        ? body.discord_user_id.trim()
+        : null;
+    const bodyDiscordUsername =
+      typeof body.discord_username === "string" && body.discord_username.trim()
+        ? body.discord_username.trim()
+        : null;
+    const discordUserId = isTrustedBot ? bodyDiscordUserId : session!.discordId;
+    const discordUsername = isTrustedBot
+      ? bodyDiscordUsername
+      : session!.username;
     const notes =
       typeof body.notes === "string" && body.notes.trim() ? body.notes.trim() : null;
     const status =
@@ -75,22 +111,16 @@ export async function POST(req: Request) {
         ? body.status.trim()
         : "pending";
 
-    if (!supabase) {
-      return Response.json(
-        {
-          success: false,
-          error: "Supabase is not configured",
-        },
-        { status: 500 }
-      );
-    }
+    const supabase = getSupabaseAdmin();
 
-    const { data: lastOrder, error: lastOrderError } = await supabase
+    const { data: lastOrderData, error: lastOrderError } = await supabase
       .from("orders")
       .select("order_id")
       .order("id", { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    const lastOrder = (lastOrderData ?? null) as OrderIdRow | null;
 
     if (lastOrderError) {
       console.error("Failed to fetch last order:", lastOrderError);
@@ -144,6 +174,7 @@ export async function POST(req: Request) {
     return Response.json({
       success: true,
       orderId,
+      status,
     });
   } catch (error) {
     console.error("Order create route failed:", error);
@@ -172,15 +203,7 @@ export async function PATCH(req: Request) {
       );
     }
 
-    if (!supabase) {
-      return Response.json(
-        {
-          success: false,
-          error: "Supabase is not configured",
-        },
-        { status: 500 }
-      );
-    }
+    const supabase = getSupabaseAdmin();
 
     const updates: Record<string, string | null> = {};
 
