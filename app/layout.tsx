@@ -1,10 +1,8 @@
-import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import Link from "next/link";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { SiteNav } from "@/components/site-nav";
 import { BRAND_NAME, BRAND_SUBLABEL, SITE_DESCRIPTION } from "@/lib/site";
-import { getSessionFromCookieStore } from "@/lib/auth";
+import { getSession } from "@/lib/auth";
 import "./globals.css";
 
 const sans = Inter({
@@ -19,7 +17,7 @@ const mono = JetBrains_Mono({
   display: "swap",
 });
 
-export const metadata: Metadata = {
+export const metadata = {
   title: {
     default: BRAND_NAME,
     template: `%s | ${BRAND_NAME}`,
@@ -32,8 +30,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const viewer = await getSessionFromCookieStore(cookieStore);
+  const viewer = await getSession();
 
   return (
     <html lang="en">
