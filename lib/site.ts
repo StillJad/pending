@@ -25,3 +25,12 @@ export function formatCurrency(value: number) {
     currency: "USD",
   }).format(value);
 }
+
+export function getMonogram(value: string) {
+  return value
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
