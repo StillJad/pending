@@ -16,7 +16,7 @@ export function SiteNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap items-center gap-2 sm:justify-end">
+    <nav className="flex items-center gap-6 text-sm text-white/70">
       {NAV_LINKS.map((item) => {
         const active = pathname ? isActive(pathname, item.href) : false;
 
@@ -25,15 +25,9 @@ export function SiteNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`nav-link ${active ? "nav-link-active" : ""}`}
+            className={`hover:text-white ${active ? "text-white" : ""}`}
           >
-            <span className="relative z-10">{item.label}</span>
-            <span
-              aria-hidden="true"
-              className={`nav-link-indicator ${
-                active ? "scale-100 opacity-100" : "scale-75 opacity-0"
-              }`}
-            />
+            <span>{item.label}</span>
           </Link>
         );
       })}
