@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { AuthSession } from "@/lib/auth";
 import { NAV_LINKS } from "@/lib/site";
 
 type SiteNavProps = {
-  viewer: AuthSession | null;
+  viewer: import("@/lib/auth").AuthSession | null;
 };
 
 function isActive(pathname: string, href: string) {
