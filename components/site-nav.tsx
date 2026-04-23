@@ -16,7 +16,7 @@ export function SiteNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-wrap items-center gap-6 text-sm">
+    <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-[0.18em]">
       {NAV_LINKS.map((item) => {
         const active = pathname ? isActive(pathname, item.href) : false;
 
@@ -25,10 +25,10 @@ export function SiteNav() {
             key={item.href}
             href={item.href}
             aria-current={active ? "page" : undefined}
-            className={`transition ${
+            className={`border-b pb-1 transition ${
               active
-                ? "text-[#8b5cf6]"
-                : "text-white/60 hover:text-white"
+                ? "border-[#8b5cf6] text-white"
+                : "border-transparent text-white/55 hover:border-white/15 hover:text-white"
             }`}
           >
             {item.label}
