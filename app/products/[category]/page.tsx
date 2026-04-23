@@ -24,20 +24,18 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
   if (categoryProducts.length === 0) {
     return (
-      <main className="page-shell">
-        <section className="page-header">
-          <span className="page-kicker">Missing category</span>
-          <h1 className="section-title mt-6">Category not found.</h1>
-          <p className="section-copy mt-4">
-            No products were found for {categoryName}. Head back to the catalog
-            to keep browsing active categories.
+      <main className="mx-auto max-w-6xl px-4 py-10">
+        <section className="space-y-4">
+          <h1 className="text-3xl font-semibold text-white">Category not found</h1>
+          <p className="text-white/70 max-w-xl">
+            No products found for {categoryName}.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/products" className="button-base button-primary">
-              Back to catalog
+          <div className="flex gap-3">
+            <Link href="/products" className="px-4 py-2 rounded-lg bg-white text-black text-sm font-medium">
+              Back
             </Link>
-            <Link href="/ticket" className="button-base button-secondary">
-              Contact support
+            <Link href="/ticket" className="px-4 py-2 rounded-lg border border-white/20 text-white/80 text-sm">
+              Support
             </Link>
           </div>
         </section>
@@ -48,35 +46,23 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   const prices = categoryProducts.map((product) => parsePrice(product.price));
 
   return (
-    <main className="page-shell">
-      <section className="page-header">
-        <div className="pointer-events-none absolute inset-y-0 right-0 w-1/3 bg-[radial-gradient(circle_at_top,rgba(119,101,255,0.2),transparent_58%)]" />
-
+    <main className="mx-auto max-w-6xl px-4 py-10">
+      <section className="space-y-4">
         <Link
           href="/products"
-          className="button-base button-ghost w-fit px-0 text-sm uppercase tracking-[0.22em] text-white/55 hover:text-white"
+          className="text-sm text-white/60 hover:text-white"
         >
-          Back to all categories
+          ← Back to products
         </Link>
 
-        <span className="page-kicker mt-6">{categoryName}</span>
-        <h1 className="section-title mt-6">{categoryName} collection</h1>
-        <p className="section-copy mt-4">
-          Review available products, compare descriptions, and move into
-          checkout with a cleaner, more premium purchase flow.
+        <h1 className="text-3xl font-semibold text-white">{categoryName}</h1>
+
+        <p className="text-white/70 max-w-xl">
+          Browse available products and choose what you need.
         </p>
 
-        <div className="mt-8 flex flex-wrap gap-3">
-          <div className="chip">
-            <span className="font-display text-white">
-              {categoryProducts.length.toString().padStart(2, "0")}
-            </span>
-            products live
-          </div>
-          <div className="chip">
-            Starting from {formatCurrency(Math.min(...prices))}
-          </div>
-          <div className="chip">Discord fulfillment after cart review</div>
+        <div className="text-sm text-white/60">
+          {categoryProducts.length} products
         </div>
       </section>
 
@@ -85,43 +71,26 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <Link
             key={product.id}
             href={`/checkout/${product.id}/${product.slug}`}
-            className={`glass-card card-hover group p-6 reveal-up stagger-${
-              (index % 4) + 1
-            }`}
+            className="border border-white/10 rounded-xl p-5 hover:border-white/30 transition"
           >
-            <div className="card-glow" />
-
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-                <div className="max-w-xl">
-                  <p className="text-xs uppercase tracking-[0.26em] text-white/40">
-                    Product #{product.id}
+            <div className="flex flex-col gap-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-lg font-medium text-white">{product.name}</h2>
+                  <p className="text-sm text-white/60 mt-1">
+                    {product.description}
                   </p>
-                  <h2 className="font-display mt-4 text-3xl tracking-[-0.04em] text-white">
-                    {product.name}
-                  </h2>
-                  <p className="mt-4 text-white/64">{product.description}</p>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-4 text-left md:text-right">
-                  <p className="text-xs uppercase tracking-[0.22em] text-white/40">
-                    Price
-                  </p>
-                  <p className="font-display mt-2 text-3xl tracking-[-0.05em] text-white">
+                <div className="text-right">
+                  <p className="text-white text-lg font-medium">
                     {formatCurrency(parsePrice(product.price))}
                   </p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2">
-                <span className="chip-muted">Digital access</span>
-                <span className="chip-muted">Cart-ready checkout</span>
-                <span className="chip-muted">Discord handoff</span>
-              </div>
-
-              <div className="flex items-center justify-between border-t border-white/10 pt-5 text-sm text-white/58 transition group-hover:text-white/78">
-                <span>Open product checkout</span>
-                <span className="font-semibold">Review now</span>
+              <div className="text-sm text-white/70">
+                View product
               </div>
             </div>
           </Link>
