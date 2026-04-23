@@ -1,5 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { getSessionFromRequest } from "@/lib/auth";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
@@ -41,6 +42,19 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+    const turnstileToken =
+      typeof body.turnstileToken === "string" ? body.turnstileToken : "";
+    const verified = await verifyTurnstileToken(turnstileToken, req);
+
+    if (!verified) {
+      return Response.json(
+        {
+          success: false,
+          error: "Bot detected",
+        },
+        { status: 403 }
+      );
+    }
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
     const directProduct =
