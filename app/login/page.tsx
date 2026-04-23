@@ -1,10 +1,6 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { DISCORD_INVITE_URL } from "@/lib/site";
-import {
-  getSessionFromCookieStore,
-  normalizeReturnToPath,
-} from "@/lib/auth";
+import { getSession, normalizeReturnToPath } from "@/lib/auth";
 
 type LoginPageProps = {
   searchParams: Promise<{
@@ -29,10 +25,9 @@ function getErrorMessage(error: string | undefined) {
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const params = await searchParams;
   const next = normalizeReturnToPath(params.next);
-  const cookieStore = await cookies();
-  const viewer = await getSessionFromCookieStore(cookieStore);
+  const viewer = await getSession();
 
-  if (viewer?.guildMember) {
+  if (viewer) {
     redirect(next);
   }
 
@@ -48,23 +43,17 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
         </h1>
 
         <p className="mt-4 text-sm leading-6 text-white/70">
-          {viewer && !viewer.guildMember
+          {params.error === "guild_required"
             ? "Join the Discord server to continue."
             : "Login with Discord before placing orders or opening support."}
         </p>
-
-        {viewer ? (
-          <p className="mt-4 font-mono text-[11px] uppercase tracking-[0.18em] text-white/45">
-            {viewer.username}
-          </p>
-        ) : null}
 
         {message ? (
           <p className="mt-4 text-sm text-[#c4b5fd]">{message}</p>
         ) : null}
 
         <div className="mt-8 flex flex-col gap-3">
-          {viewer && !viewer.guildMember ? (
+          {params.error === "guild_required" ? (
             <a
               href={DISCORD_INVITE_URL}
               target="_blank"
@@ -81,12 +70,6 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           >
             Continue with Discord
           </a>
-
-          {viewer ? (
-            <a href="/logout" className="ui-button-secondary">
-              Logout
-            </a>
-          ) : null}
         </div>
       </section>
     </main>
