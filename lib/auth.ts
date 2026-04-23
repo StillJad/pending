@@ -9,6 +9,7 @@ export type AuthSession = {
 type OAuthState = {
   next: string;
   state: string;
+  turnstileToken: string;
 };
 
 type CookieStoreLike = {
@@ -107,13 +108,14 @@ function parseSession(value: string | null | undefined) {
 function parseOAuthState(value: string | null | undefined) {
   const state = decodeCookieValue<OAuthState>(value);
 
-  if (!state?.state || !state.next) {
+  if (!state?.state || !state.next || !state.turnstileToken) {
     return null;
   }
 
   return {
     next: normalizeReturnToPath(state.next),
     state: state.state,
+    turnstileToken: state.turnstileToken,
   };
 }
 
@@ -159,11 +161,12 @@ export async function getSessionFromRequest(request: Request) {
   );
 }
 
-export async function setOAuthState(next: string) {
+export async function setOAuthState(next: string, turnstileToken: string) {
   const cookieStore = await cookies();
   const payload: OAuthState = {
     next: normalizeReturnToPath(next),
     state: crypto.randomUUID(),
+    turnstileToken,
   };
 
   cookieStore.set(
