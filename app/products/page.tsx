@@ -96,7 +96,7 @@ export default async function ProductsPage({
         </div>
       </section>
 
-      <section className="grid gap-5 md:grid-cols-3">
+      <section className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
         <div className="ui-panel p-5">
           <p className="ui-overline">Items</p>
           <p className="mt-3 text-3xl font-semibold tracking-tight text-white">
@@ -132,7 +132,7 @@ export default async function ProductsPage({
           </div>
         </section>
       ) : (
-        <section className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+        <section className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {filteredProducts.map((product) => (
             <Link
               key={product.id}
@@ -140,11 +140,15 @@ export default async function ProductsPage({
               className="pending-product-card block"
             >
               <div className="pending-product-media">
-                <span className="pending-stock-badge">{buildStockLabel(product.id)}</span>
+                <span className="pending-stock-badge bg-white/10 backdrop-blur px-3 py-1 text-[11px] uppercase tracking-wider text-white/70">
+                  {buildStockLabel(product.id)}
+                </span>
 
-                <div className="pending-product-box">
-                  <span className="pending-product-mark">{BRAND_NAME}</span>
-                  <strong>{getMonogram(product.name)}</strong>
+                <div className="pending-product-box flex flex-col items-center justify-center text-center">
+                  <span className="text-xs text-white/40">discord.gg/pending</span>
+                  <strong className="mt-1 text-2xl tracking-tight text-white">
+                    {getMonogram(product.name)}
+                  </strong>
                 </div>
 
                 <div className="pending-product-title">
@@ -172,7 +176,7 @@ export default async function ProductsPage({
                 </p>
 
                 <div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4">
-                  <span className="text-xl font-semibold text-[#ff4dde]">
+                  <span className="text-xl font-semibold text-white">
                     {formatCurrency(product.amount)}
                   </span>
                   <span className="text-sm text-white/52">Open checkout</span>
