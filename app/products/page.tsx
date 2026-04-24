@@ -64,7 +64,7 @@ export default async function ProductsPage({
     : catalog;
 
   return (
-    <main className="space-y-10">
+    <main className="page-transition space-y-10">
       <section className="ui-panel relative overflow-hidden px-6 py-14 sm:px-10 sm:py-16">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff2bd6]/60 to-transparent" />
         <div className="absolute left-16 top-10 h-52 w-52 rounded-full bg-[radial-gradient(circle,rgba(255,43,214,0.18),transparent_68%)] blur-3xl" />
