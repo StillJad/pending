@@ -26,6 +26,17 @@ export const metadata = {
   description: SITE_DESCRIPTION,
 };
 
+function LogoMark() {
+  return (
+    <span className="relative inline-flex h-12 w-12 items-center justify-center rounded-full border border-[#d946ef]/35 bg-white/[0.03] shadow-[0_0_28px_rgba(168,85,247,0.16)]">
+      <span className="absolute inset-[7px] rounded-full border border-white/10 bg-gradient-to-br from-[#ff2bd6] to-[#8b5cf6] opacity-80" />
+      <span className="relative font-mono text-sm font-semibold uppercase tracking-[0.18em] text-white">
+        P
+      </span>
+    </span>
+  );
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -35,56 +46,57 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body className={`${sans.variable} ${mono.variable} font-sans bg-[#0b0b0f] text-white`}>
+      <body
+        className={`${sans.variable} ${mono.variable} pending-shell font-sans text-white`}
+      >
         <div className="min-h-screen">
-          <header className="sticky top-0 z-50 border-b border-white/5 bg-[#0b0b0f]/96">
-            <div className="mx-auto max-w-6xl px-4">
-              <div className="relative flex flex-col gap-6 py-5 md:flex-row md:items-end md:justify-between">
-                <Link href="/" className="min-w-0">
-                  <span className="block text-[1.55rem] font-semibold tracking-[-0.08em] text-white sm:text-[1.75rem]">
-                    {BRAND_NAME}
-                  </span>
-                  <span className="mt-1 block font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
-                    {BRAND_SUBLABEL}
+          <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070a]/82 backdrop-blur-xl">
+            <div className="mx-auto max-w-[1240px] px-4">
+              <div className="relative flex flex-col gap-5 py-4 md:flex-row md:items-center md:justify-between">
+                <Link href="/" className="flex min-w-0 items-center gap-3">
+                  <LogoMark />
+                  <span className="min-w-0">
+                    <span className="block truncate text-[1.65rem] font-semibold tracking-[-0.08em] text-white sm:text-[1.85rem]">
+                      {BRAND_NAME}
+                    </span>
+                    <span className="mt-1 block truncate font-mono text-[11px] uppercase tracking-[0.18em] text-white/36">
+                      {BRAND_SUBLABEL}
+                    </span>
                   </span>
                 </Link>
 
                 <SiteNav viewer={viewer} />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#8b5cf6]/45 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#d946ef]/60 to-transparent" />
               </div>
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-6xl px-4 py-12">{children}</main>
+          <main className="mx-auto w-full max-w-[1240px] px-4 py-10 sm:py-12">
+            {children}
+          </main>
 
-          <footer className="mt-6 border-t border-white/5">
-            <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
-              <div>
-                <p className="text-lg font-semibold tracking-tight text-white">
-                  {BRAND_NAME}
-                </p>
-                <p className="mt-2 max-w-xl text-sm text-white/55">
-                  {SITE_DESCRIPTION}
-                </p>
-              </div>
+          <footer className="border-t border-white/8">
+            <div className="mx-auto flex max-w-[1240px] flex-col gap-5 px-4 py-8 text-sm text-white/52 md:flex-row md:items-center md:justify-between">
+              <p>
+                {BRAND_NAME} © {new Date().getFullYear()}
+              </p>
 
-              <div className="flex flex-wrap gap-x-6 gap-y-2 font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
-                <Link href="/products" className="transition hover:text-white">
-                  Buy
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <Link href="/Tos" className="transition hover:text-white">
+                  Terms
                 </Link>
                 <Link href="/ticket" className="transition hover:text-white">
                   Support
                 </Link>
-                <Link href="/orders" className="transition hover:text-white">
-                  Tracking
-                </Link>
-                <Link href="/Tos" className="transition hover:text-white">
-                  Terms
-                </Link>
-                <Link href="/PrivPolicy" className="transition hover:text-white">
-                  Privacy
-                </Link>
+                <a
+                  href="https://discord.gg/pending"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="transition hover:text-white"
+                >
+                  Discord
+                </a>
               </div>
             </div>
           </footer>
