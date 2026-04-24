@@ -1361,6 +1361,19 @@ if (
   return message.reply(`delivery channel set to ${channelMention}`);
 }
 
+async function testDB() {
+  const { data, error } = await supabase
+    .from("payment_methods")
+    .insert({
+      guild_id: "test",
+      method: "btc",
+      value: "1abc123"
+    });
+
+  console.log("DATA:", data);
+  console.log("ERROR:", error);
+}
+    
   
 
 if (rawCommandName === "forgetaccount") {
