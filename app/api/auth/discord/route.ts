@@ -8,13 +8,22 @@ import {
 import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function GET(request: NextRequest) {
-  const loginUrl = new URL("/login", request.url);
-  loginUrl.searchParams.set(
-    "next",
-    normalizeReturnToPath(request.nextUrl.searchParams.get("next"))
-  );
-
-  return NextResponse.redirect(loginUrl);
+  try {
+    const next = normalizeReturnToPath(request.nextUrl.searchParams.get("next"));
+    const { cookieValue, payload } = await createOAuthState(next);
+    const response = NextResponse.redirect(getDiscordAuthorizeUrl(payload.state));
+    setOAuthStateCookie(response, cookieValue);
+    return response;
+  } catch (error) {
+    console.error("Discord auth redirect failed:", error);
+    const loginUrl = new URL("/login", request.url);
+    loginUrl.searchParams.set("error", "config");
+    loginUrl.searchParams.set(
+      "next",
+      normalizeReturnToPath(request.nextUrl.searchParams.get("next"))
+    );
+    return NextResponse.redirect(loginUrl);
+  }
 }
 
 export async function POST(request: NextRequest) {
@@ -60,7 +69,7 @@ export async function POST(request: NextRequest) {
 
     return Response.json(
       {
-        error: "Discord login is not configured yet.",
+        error: "Discord login is not configured yet, Please contact support for assistance.",
       },
       { status: 500 }
     );
