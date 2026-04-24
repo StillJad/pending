@@ -25,7 +25,7 @@ const supportDetails = [
 
 export default function TicketPage() {
   return (
-    <main className="space-y-10">
+    <main className="page-transition space-y-10">
       <section className="grid gap-10 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_260px] lg:items-end">
         <div className="max-w-2xl">
           <p className="ui-overline ui-overline-accent">Support</p>
