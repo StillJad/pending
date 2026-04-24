@@ -1,6 +1,5 @@
 import { getSessionFromRequest } from "@/lib/auth";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { verifyTurnstileToken } from "@/lib/turnstile";
 
 type OrderItem = {
   name: string;
@@ -40,7 +39,7 @@ export async function POST(req: Request) {
         return Response.json(
           {
             success: false,
-            error: "Unauthorized",
+            error: internalKey ? "Invalid internal bot key" : "Unauthorized",
           },
           { status: 401 }
         );
@@ -77,25 +76,9 @@ export async function POST(req: Request) {
       hasSession: Boolean(session),
       hasInternalKey: Boolean(internalKey),
       hasExpectedInternalKey: Boolean(process.env.INTERNAL_BOT_API_KEY),
+      internalKeyMatches: isTrustedBot,
       bodyKeys: Object.keys(body || {}),
     });
-
-    const turnstileToken =
-      typeof body.turnstileToken === "string" ? body.turnstileToken : "";
-
-    if (!isTrustedBot) {
-      const verified = await verifyTurnstileToken(turnstileToken, req);
-
-      if (!verified) {
-        return Response.json(
-          {
-            success: false,
-            error: "Bot detected",
-          },
-          { status: 403 }
-        );
-      }
-    }
 
     const items: OrderItem[] = Array.isArray(body.items) ? body.items : [];
     const directProduct =
