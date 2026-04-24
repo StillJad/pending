@@ -71,6 +71,15 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
+
+    console.log("POST /api/order", {
+      isTrustedBot,
+      hasSession: Boolean(session),
+      hasInternalKey: Boolean(internalKey),
+      hasExpectedInternalKey: Boolean(process.env.INTERNAL_BOT_API_KEY),
+      bodyKeys: Object.keys(body || {}),
+    });
+
     const turnstileToken =
       typeof body.turnstileToken === "string" ? body.turnstileToken : "";
 
@@ -168,11 +177,28 @@ export async function POST(req: Request) {
     ]);
 
     if (insertError) {
-      console.error("Failed to insert order:", insertError);
+      console.error("Failed to insert order:", {
+        message: insertError.message,
+        details: insertError.details,
+        hint: insertError.hint,
+        code: insertError.code,
+        order: {
+          order_id: orderId,
+          discord_user_id: discordUserId,
+          discord_username: discordUsername,
+          product: productSummary,
+          payment_method: paymentMethod,
+          status,
+          notes: fullNotes,
+        },
+      });
+
       return Response.json(
         {
           success: false,
           error: "failed to create order",
+          details: insertError.message,
+          code: insertError.code,
         },
         { status: 500 }
       );
