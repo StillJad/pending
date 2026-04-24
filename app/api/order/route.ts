@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         );
       }
 
-      if (!session.isInServer) {
+      if (!session?.isInServer) {
         return Response.json(
           {
             success: false,
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         );
       }
 
-      if (!session.roleCheckPassed) {
+      if (session.roleCheckPassed === false) {
         return Response.json(
           {
             success: false,
