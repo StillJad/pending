@@ -1,10 +1,16 @@
 import { NextResponse } from "next/server";
-import { clearOAuthState, clearSession } from "@/lib/auth";
+import {
+  clearOAuthStateCookie,
+  clearSessionCookie,
+  deletePersistentSession,
+  getSessionTokenFromRequest,
+} from "@/lib/auth";
 
 export async function GET(request: Request) {
-  await clearSession();
-  await clearOAuthState();
+  await deletePersistentSession(getSessionTokenFromRequest(request));
 
   const response = NextResponse.redirect(new URL("/", request.url));
+  clearSessionCookie(response);
+  clearOAuthStateCookie(response);
   return response;
 }
