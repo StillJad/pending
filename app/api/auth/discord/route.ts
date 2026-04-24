@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
+  createOAuthState,
   getDiscordAuthorizeUrl,
   normalizeReturnToPath,
-  setOAuthState,
+  setOAuthStateCookie,
 } from "@/lib/auth";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 export async function GET(request: NextRequest) {
   const loginUrl = new URL("/login", request.url);
@@ -27,18 +29,32 @@ export async function POST(request: NextRequest) {
     if (!turnstileToken) {
       return Response.json(
         {
-          error: "Verification failed. Try again.",
+          error: "Turnstile verification is required.",
         },
         { status: 400 }
       );
     }
 
-    const state = await setOAuthState(next, turnstileToken);
+    const verified = await verifyTurnstileToken(turnstileToken, request);
 
-    return Response.json({
+    if (!verified) {
+      return Response.json(
+        {
+          error: "Bot detected",
+        },
+        { status: 403 }
+      );
+    }
+
+    const { cookieValue, payload } = await createOAuthState(next);
+    const response = NextResponse.json({
       success: true,
-      url: getDiscordAuthorizeUrl(state.state),
+      url: getDiscordAuthorizeUrl(payload.state),
     });
+
+    setOAuthStateCookie(response, cookieValue);
+
+    return response;
   } catch (error) {
     console.error("Discord auth redirect failed:", error);
 
