@@ -14,6 +14,8 @@ function getErrorMessage(error: string | undefined) {
   switch (error) {
     case "guild_required":
       return "Join the Discord server to continue";
+    case "role_required":
+      return "A required Discord role is missing.";
     case "oauth_failed":
       return "Discord login failed. Try again.";
     case "config":
@@ -33,7 +35,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   const primaryHref = next === "/" ? "/products" : next;
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-16">
+    <main className="page-transition mx-auto max-w-6xl px-4 py-16">
       <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="max-w-2xl">
           <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#8b5cf6]">
