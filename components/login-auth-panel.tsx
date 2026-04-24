@@ -20,6 +20,8 @@ export function LoginAuthPanel({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState(0);
+  const directLoginHref = `/api/auth/discord?next=${encodeURIComponent(next)}`;
+  const turnstileEnabled = Boolean(process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY);
 
   const handleContinue = async () => {
     if (!turnstileToken || isSubmitting) {
@@ -99,14 +101,29 @@ export function LoginAuthPanel({
           </a>
         ) : null}
 
-        <button
-          type="button"
-          onClick={handleContinue}
-          disabled={!turnstileToken || isSubmitting}
-          className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:shadow-none"
-        >
-          {isSubmitting ? "Checking..." : "Continue with Discord"}
-        </button>
+        {turnstileEnabled ? (
+          <button
+            type="button"
+            onClick={handleContinue}
+            disabled={!turnstileToken || isSubmitting}
+            className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:shadow-none"
+          >
+            {isSubmitting ? "Checking..." : "Continue with Discord"}
+          </button>
+        ) : (
+          <a
+            href={directLoginHref}
+            className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)]"
+          >
+            Continue with Discord
+          </a>
+        )}
+
+        {turnstileEnabled ? (
+          <a href={directLoginHref} className="text-sm text-white/55 transition hover:text-white">
+            Continue without verification
+          </a>
+        ) : null}
       </div>
 
       <p className="mt-5 text-sm text-white/50">
