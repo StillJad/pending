@@ -60,7 +60,7 @@ export default function OrdersPage() {
   }, [orders]);
 
   return (
-    <main className="space-y-8">
+    <main className="page-transition space-y-8">
       <section className="grid gap-8 border-b border-white/5 pb-10 lg:grid-cols-[minmax(0,1fr)_240px]">
         <div className="max-w-2xl">
           <p className="ui-overline ui-overline-accent">Tracking</p>
