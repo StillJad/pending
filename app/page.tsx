@@ -127,8 +127,8 @@ export default function Home() {
   return (
     <main className="page-transition space-y-10 sm:space-y-14">
       <section className="hero-shimmer pending-grid-glow ui-panel soft-float relative overflow-hidden px-6 py-16 sm:px-10 sm:py-24">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff2bd6]/60 to-transparent" />
-        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(217,70,239,0.22),transparent_68%)] blur-3xl" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+        <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.12),transparent_68%)] blur-3xl" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <span className="pending-badge">
@@ -138,7 +138,7 @@ export default function Home() {
 
           <h1 className="mx-auto mt-8 max-w-4xl text-5xl font-semibold tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl">
             Experience Quality with{" "}
-            <span className="pending-gradient-text">{BRAND_NAME}</span>
+            <span className="text-white">{BRAND_NAME}</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/68 sm:text-lg">
@@ -237,7 +237,7 @@ export default function Home() {
                 </p>
 
                 <div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4">
-                  <span className="text-xl font-semibold text-[#ff4dde]">
+                  <span className="text-xl font-semibold text-white">
                     {formatCurrency(product.amount)}
                   </span>
                   <span className="text-sm text-white/52">View product</span>
@@ -285,7 +285,7 @@ export default function Home() {
                   </p>
                   <p className="mt-2 text-sm text-white/56">score 10/10</p>
                 </div>
-                <span className="rounded-full border border-[#ff2bd6]/28 bg-[#ff2bd6]/10 px-3 py-1 text-sm font-semibold text-[#ffd2f8]">
+                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
                   premium
                 </span>
               </div>
@@ -294,9 +294,9 @@ export default function Home() {
                 {comparisonStrengths.map((item) => (
                   <div
                     key={item}
-                    className="flex items-center gap-3 rounded-2xl border border-[#d946ef]/18 bg-[#d946ef]/[0.08] px-4 py-4"
+                    className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.05] px-4 py-4"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#ff2bd6] to-[#8b5cf6] text-sm font-semibold text-white">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
                       +
                     </span>
                     <span className="text-sm text-white/86">{item}</span>
@@ -334,7 +334,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-[#ff2bd6]/28 bg-[#09090d] text-2xl font-semibold text-white shadow-[0_0_36px_rgba(217,70,239,0.34)] lg:flex">
+          <div className="pointer-events-none absolute left-1/2 top-1/2 hidden h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black text-2xl font-semibold text-white shadow-[0_0_36px_rgba(255,255,255,0.08)] lg:flex">
             VS
           </div>
         </div>
@@ -356,13 +356,13 @@ export default function Home() {
               open={index === 0}
             >
               <summary className="flex cursor-pointer items-center gap-5 px-5 py-5 sm:px-7">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-[#ff2bd6]/24 bg-[#d946ef]/20 text-base font-semibold text-white">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-base font-semibold text-white">
                   {index + 1}
                 </span>
                 <span className="flex-1 text-left text-xl font-semibold tracking-tight text-white">
                   {faq.title}
                 </span>
-                <span className="text-xl text-[#ff4dde] transition group-open:rotate-45">
+                <span className="text-xl text-white transition group-open:rotate-45">
                   +
                 </span>
               </summary>
@@ -382,7 +382,7 @@ export default function Home() {
           </span>
 
           <h2 className="mt-8 text-4xl font-semibold tracking-[-0.07em] text-white sm:text-5xl">
-            Join our <span className="pending-gradient-text">Discord.</span>
+            Join our <span className="text-white">Discord.</span>
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-8 text-white/72">
@@ -422,7 +422,7 @@ export default function Home() {
 
           <div className="mt-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#ff2bd6] to-[#8b5cf6] text-lg font-semibold text-white">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-lg font-semibold text-white">
                 P
               </div>
               <div>
@@ -439,14 +439,14 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-2xl border border-[#ff2bd6]/24 bg-[#ff2bd6]/10 px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
             >
               Join
             </a>
           </div>
 
           <div className="mt-6 inline-flex items-center rounded-full border border-[#47ff8a]/24 bg-[#47ff8a]/10 px-4 py-2 text-sm text-white/86">
-            5,978 members online
+            Live updating...
           </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-3">
