@@ -23,12 +23,6 @@ const {
   TextInputStyle,
 } = require("discord.js");
 
-const { createClient } = require("@supabase/supabase-js");
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
 const fs = require("fs");
 const path = require("path");
 const database = require("./lib/database");
@@ -1361,19 +1355,6 @@ if (
   return message.reply(`delivery channel set to ${channelMention}`);
 }
 
-async function testDB() {
-  const { data, error } = await supabase
-    .from("payment_methods")
-    .insert({
-      guild_id: "test",
-      method: "btc",
-      value: "1abc123"
-    });
-
-  console.log("DATA:", data);
-  console.log("ERROR:", error);
-}
-    
   
 
 if (rawCommandName === "forgetaccount") {
@@ -2774,5 +2755,21 @@ client.once("ready", () => {
   console.log(`Logged in as ${client.user.tag}`);
   client.user.setActivity("/pending | https://pending.cc");
 });
+
+async function testDB() {
+  const { data, error } = await supabase
+    .from("payment_methods")
+    .insert({
+      guild_id: "test",
+      method: "btc",
+      value: "1abc123",
+    })
+    .select();
+
+  console.log("SUPABASE TEST DATA:", data);
+  console.log("SUPABASE TEST ERROR:", error);
+}
+
+testDB();
 
 client.login(token);
