@@ -31,6 +31,13 @@ const {
   getRepliedMessage,
 } = require("./lib/utils/messages");
 
+const { createClient } = require("https://esm.sh/@supabase/supabase-js");
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
+
 const token = process.env.DISCORD_TOKEN?.trim();
 const prefix = process.env.PREFIX || ",";
 const configPath = path.join(__dirname, "data", "config.json");
