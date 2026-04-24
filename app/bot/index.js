@@ -2310,10 +2310,24 @@ if (interaction.customId.startsWith("deny_vouch:")) {
           }),
         });
 
-        const orderData = await orderRes.json();
+        const rawOrderResponse = await orderRes.text();
+        console.log("CREATE TICKET ORDER RESPONSE:", {
+          status: orderRes.status,
+          ok: orderRes.ok,
+          baseUrl,
+          hasInternalKey: Boolean(process.env.INTERNAL_BOT_API_KEY),
+          body: rawOrderResponse,
+        });
 
-        if (!orderData.success || !orderData.orderId) {
-          throw new Error("failed to create order");
+        let orderData;
+        try {
+          orderData = JSON.parse(rawOrderResponse);
+        } catch (parseError) {
+          throw new Error(`invalid order api json: ${rawOrderResponse}`);
+        }
+
+        if (!orderRes.ok || !orderData.success || !orderData.orderId) {
+          throw new Error(`failed to create order: ${rawOrderResponse}`);
         }
 
         orderId = orderData.orderId;
