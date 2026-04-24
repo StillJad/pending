@@ -125,8 +125,8 @@ export default function Home() {
   }));
 
   return (
-    <main className="space-y-10 sm:space-y-14">
-      <section className="pending-grid-glow ui-panel relative overflow-hidden px-6 py-16 sm:px-10 sm:py-24">
+    <main className="page-transition space-y-10 sm:space-y-14">
+      <section className="hero-shimmer pending-grid-glow ui-panel soft-float relative overflow-hidden px-6 py-16 sm:px-10 sm:py-24">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ff2bd6]/60 to-transparent" />
         <div className="absolute left-1/2 top-24 h-72 w-72 -translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(217,70,239,0.22),transparent_68%)] blur-3xl" />
 
