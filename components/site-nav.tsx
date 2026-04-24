@@ -73,6 +73,7 @@ function LoginIcon() {
 
 export function SiteNav({ viewer }: SiteNavProps) {
   const pathname = usePathname() || "/";
+  const loginHref = `/api/auth/discord?next=${encodeURIComponent(pathname)}`;
 
   return (
     <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-end md:gap-6">
@@ -141,13 +142,13 @@ export function SiteNav({ viewer }: SiteNavProps) {
             </a>
           </>
         ) : (
-          <Link
-            href="/login"
+          <a
+            href={loginHref}
             className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-[#ff2bd6] via-[#d946ef] to-[#8b5cf6] px-5 py-3 text-sm font-semibold text-white shadow-[0_0_28px_rgba(217,70,239,0.28)] transition hover:scale-[1.01] hover:shadow-[0_0_34px_rgba(168,85,247,0.36)]"
           >
             <LoginIcon />
             Login
-          </Link>
+          </a>
         )}
       </div>
     </div>
