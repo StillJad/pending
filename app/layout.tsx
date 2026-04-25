@@ -25,11 +25,7 @@ export const metadata = {
     template: `%s | ${BRAND_NAME}`,
   },
   description: SITE_DESCRIPTION,
-  icons: {
-    icon: "/favicon.ico?v=2",
-  },
 };
-
 export default async function RootLayout({
   children,
 }: {
