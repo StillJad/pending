@@ -2659,7 +2659,7 @@ if (orderId) {
         inline: false,
       }
     )
-    .setFooter({ text: "/Pending | pending.cc" });
+    .setFooter({ text: "/pending | pending.cc" });
 
   await vouchChannel.send({ embeds: [embed] });
 
