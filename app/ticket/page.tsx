@@ -56,7 +56,7 @@ export default function TicketPage() {
           <p className="ui-overline">Channel</p>
           <div className="mt-5 space-y-5">
             <div>
-              <p className="font-mono text-xl uppercase tracking-[0.16em] text-[#8b5cf6]">
+              <p className="font-mono text-xl uppercase tracking-[0.16em] text-white/60">
                 discord
               </p>
               <p className="mt-2 text-sm text-white/55">
@@ -93,7 +93,7 @@ export default function TicketPage() {
                 key={step.title}
                 className="grid gap-4 border-t border-white/5 py-5 first:border-t-0 first:pt-0 md:grid-cols-[64px_minmax(0,1fr)]"
               >
-                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5cf6]">
+                <div className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/50">
                   0{index + 1}
                 </div>
                 <div>
