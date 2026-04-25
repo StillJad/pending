@@ -112,9 +112,9 @@ export function BackgroundParticles() {
         gradient.addColorStop(0, `rgba(255, 255, 255, ${particle.alpha})`);
         gradient.addColorStop(
           0.55,
-          `rgba(255, 43, 214, ${particle.alpha * 0.72})`
+          `rgba(255, 255, 255, ${particle.alpha * 0.42})`
         );
-        gradient.addColorStop(1, "rgba(139, 92, 246, 0)");
+        gradient.addColorStop(1, "rgba(255, 255, 255, 0)");
 
         context.beginPath();
         context.fillStyle = gradient;
