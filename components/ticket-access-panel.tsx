@@ -66,14 +66,14 @@ export function TicketAccessPanel() {
       />
 
       {error ? (
-        <p className="mt-4 text-sm text-[#c4b5fd]">{error}</p>
+        <p className="mt-4 text-sm text-white/80">{error}</p>
       ) : null}
 
       <button
         type="button"
         onClick={handleOpenTicket}
         disabled={!turnstileToken || isSubmitting}
-        className="mt-5 rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:shadow-none"
+        className="mt-5 rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-white"
       >
         {isSubmitting ? "Checking..." : "Open Discord ticket"}
       </button>
