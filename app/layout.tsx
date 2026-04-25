@@ -20,6 +20,12 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata = {
+  icons: {
+    icon: "/favicon.png",
+  },
+};
+
+export const metadata = {
   title: {
     default: BRAND_NAME,
     template: `%s | ${BRAND_NAME}`,
