@@ -21,7 +21,7 @@ function getStatusClasses(status: string) {
   const normalized = status.toLowerCase();
 
   if (normalized.includes("pending")) {
-    return "rounded-full border border-[#8b5cf6]/35 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-[#c4b5fd]";
+    return "rounded-full border border-white/15 px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.18em] text-white/80";
   }
 
   if (normalized.includes("complete") || normalized.includes("delivered")) {
@@ -90,7 +90,7 @@ export default function OrdersPage() {
             </div>
             <div className="flex items-center justify-between border-t border-white/5 pt-4">
               <span className="ui-overline">Value</span>
-              <span className="font-mono text-base text-[#8b5cf6]">
+              <span className="font-mono text-base text-white/80">
                 {formatCurrency(totalSpent)}
               </span>
             </div>
@@ -147,7 +147,7 @@ export default function OrdersPage() {
 
                 <div className="border-t border-white/10 pt-5 lg:min-w-[180px] lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0 lg:text-right">
                   <p className="ui-overline">Total</p>
-                  <p className="mt-2 font-mono text-3xl text-[#8b5cf6]">
+                  <p className="mt-2 font-mono text-3xl text-white">
                     {formatCurrency(order.total)}
                   </p>
                 </div>
