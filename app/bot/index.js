@@ -30,13 +30,11 @@ const {
   getMessageFromLink,
   getRepliedMessage,
 } = require("./lib/utils/messages");
-const { createClient } = require("@supabase/supabase-js");
 
 const token = process.env.DISCORD_TOKEN?.trim();
 const prefix = process.env.PREFIX || ",";
 const configPath = path.join(__dirname, "data", "config.json");
 const configBackupPath = path.join(__dirname, "data", "config.backup.json");
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 const DEFAULT_CONFIG = {
   autorole: null,
@@ -2772,20 +2770,12 @@ client.once("ready", () => {
   client.user.setActivity("/pending | https://pending.cc");
 });
 
-async function testDB() {
-  const { data, error } = await supabase
-    .from("payment_methods")
-    .insert({
-      guild_id: "test",
-      method: "btc",
-      value: "1abc123",
-    })
-    .select();
-
-  console.log("SUPABASE TEST DATA:", data);
-  console.log("SUPABASE TEST ERROR:", error);
-}
-
-testDB();
-
-client.login(token);
+database.hydrateFromSupabase()
+  .then(() => {
+    console.log("Bot memory hydrated");
+    return client.login(token);
+  })
+  .catch((error) => {
+    console.error("Memory hydration failed, using fallback:", error);
+    return client.login(token);
+  });
