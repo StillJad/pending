@@ -85,7 +85,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             </div>
             <div className="flex items-center justify-between border-t border-white/5 pt-4">
               <span className="ui-overline">Start</span>
-              <span className="font-mono text-base text-[#8b5cf6]">
+              <span className="font-mono text-base text-white/80">
                 {formatCurrency(Math.min(...prices))}
               </span>
             </div>
@@ -113,7 +113,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
               <div className="border-t border-white/10 pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
                 <p className="ui-overline">Price</p>
-                <p className="mt-2 font-mono text-3xl text-[#8b5cf6]">
+                <p className="mt-2 font-mono text-3xl text-white">
                   {formatCurrency(parsePrice(product.price))}
                 </p>
 
