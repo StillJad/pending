@@ -129,6 +129,10 @@ function readConfigFile(targetPath) {
 }
 
 function getConfig() {
+  if (typeof database.getGlobalSettings === "function") {
+    return sanitizeConfig(database.getGlobalSettings());
+  }
+
   ensureConfigFile();
 
   try {
@@ -150,8 +154,6 @@ function getConfig() {
 }
 
 function saveConfig(data) {
-  ensureConfigFile();
-
   const current = getConfig();
   const incoming = sanitizeConfig(data || {});
 
@@ -177,10 +179,19 @@ function saveConfig(data) {
       : current.usedDeliveryIdentities,
   });
 
-  const tempPath = `${configPath}.tmp`;
-  fs.writeFileSync(tempPath, JSON.stringify(merged, null, 2));
-  fs.renameSync(tempPath, configPath);
-  fs.writeFileSync(configBackupPath, JSON.stringify(merged, null, 2));
+  if (typeof database.saveGlobalSettings === "function") {
+    database.saveGlobalSettings(merged);
+  }
+
+  try {
+    ensureConfigFile();
+    const tempPath = `${configPath}.tmp`;
+    fs.writeFileSync(tempPath, JSON.stringify(merged, null, 2));
+    fs.renameSync(tempPath, configPath);
+    fs.writeFileSync(configBackupPath, JSON.stringify(merged, null, 2));
+  } catch (error) {
+    console.error("Failed to write local config backup:", error);
+  }
 }
 
 function normalizeLinkedTargetId(value) {
