@@ -2632,7 +2632,7 @@ if (orderId) {
     .setColor(0x57f287)
     .setTitle("✅ Vouch")
     .addFields(
-      { name: "Order ID", value: order.order_id || orderId, inline: true },
+      { name: "Order ID", value: order?.order_id || orderId || "N/A", inline: true },
       {
         name: "Buyer",
         value: order.discord_user_id ? `<@${order.discord_user_id}>` : "Unknown",
