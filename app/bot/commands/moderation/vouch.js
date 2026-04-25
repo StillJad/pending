@@ -50,33 +50,34 @@ module.exports = {
     const embed = new EmbedBuilder()
       .setColor(0x57f287)
       .setTitle("✅ Vouch")
+      .setDescription(`**${note}**`)
       .addFields(
-        { name: "Order ID", value: order?.order_id || orderId || "N/A", inline: true },
-        {
-          name: "Buyer",
-          value: order?.discord_user_id ? `<@${order.discord_user_id}>` : `${target.author}`,
-          inline: true,
-        },
-        {
-          name: "Vouched by",
-          value: `${target.author}`,
-          inline: true,
-        },
-        {
-          name: "Product",
-          value: order?.product || "Not linked",
-          inline: true,
-        },
-        {
-          name: "Payment",
-          value: order?.payment_method || "Not linked",
-          inline: true,
-        },
-        {
-          name: "Note",
-          value: note,
-          inline: false,
-        }
+        orderId
+          ? [
+              { name: "Order ID", value: order?.order_id || orderId, inline: true },
+              {
+                name: "Buyer",
+                value: order?.discord_user_id ? `<@${order.discord_user_id}>` : `${target.author}`,
+                inline: true,
+              },
+              {
+                name: "Product",
+                value: order?.product || "Not linked",
+                inline: true,
+              },
+              {
+                name: "Payment",
+                value: order?.payment_method || "Not linked",
+                inline: true,
+              },
+            ]
+          : [
+              {
+                name: "Submitted by",
+                value: `${target.author}`,
+                inline: true,
+              },
+            ]
       )
       .setFooter({ text: "/Pending | pending.cc" });
 
