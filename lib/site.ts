@@ -1,23 +1,30 @@
 export const BRAND_NAME = "Pending";
-export const BRAND_SUBLABEL = "digital goods / discord fulfillment";
+export const BRAND_SUBLABEL = "premium digital products";
 export const SITE_DESCRIPTION =
-  "Digital goods. Clear pricing. Discord fulfillment.";
+  "Digital goods, Discord support, fast delivery, and clean order tracking.";
 export const DISCORD_INVITE_URL = "https://discord.gg/pending";
 
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
-  { href: "/products", label: "Buy" },
+  { href: "/products", label: "Products" },
+  { href: "/#reviews", label: "Reviews" },
   { href: "/ticket", label: "Support" },
-  { href: "/orders", label: "Tracking" },
+  { href: "/Tos", label: "Terms" },
 ] as const;
 
 export function toCategorySlug(category: string) {
   return category.toLowerCase().replace(/\s+/g, "-");
 }
 
-export function parsePrice(price: string) {
-  const value = Number(price.replace(/[^0-9.]/g, ""));
-  return Number.isFinite(value) ? value : 0;
+export function parsePrice(value: string | number) {
+  if (typeof value === "number") {
+    return Number.isFinite(value) ? value : 0;
+  }
+
+  const cleaned = value.replace(/[^0-9.]/g, "");
+  const parsed = Number.parseFloat(cleaned);
+
+  return Number.isFinite(parsed) ? parsed : 0;
 }
 
 export function formatCurrency(value: number) {
