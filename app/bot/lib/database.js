@@ -1,10 +1,19 @@
 const fs = require("fs");
 const path = require("path");
+const { createClient } = require("@supabase/supabase-js");
 
 const dataDir = path.join(__dirname, "..", "data");
 const databasePath = path.join(dataDir, "database.json");
 const legacyConfigPath = path.join(dataDir, "config.json");
 const legacyGiveawaysPath = path.join(dataDir, "giveaways.json");
+
+const supabase =
+  process.env.SUPABASE_URL && process.env.SUPABASE_KEY
+    ? createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY)
+    : null;
+
+let memoryState = null;
+let hydrationPromise = null;
 
 const defaultGlobalSettings = {
   autorole: null,
@@ -137,6 +146,33 @@ function createDefaultState() {
   };
 }
 
+function normalizeState(raw) {
+  const state = createDefaultState();
+
+  if (raw && typeof raw === "object") {
+    state.version = raw.version || 1;
+    state.orders = raw.orders && typeof raw.orders === "object" ? raw.orders : {};
+    state.giveaways = Array.isArray(raw.giveaways) ? raw.giveaways : [];
+    state.snipes = {
+      messages:
+        raw.snipes?.messages && typeof raw.snipes.messages === "object"
+          ? raw.snipes.messages
+          : {},
+      reactions:
+        raw.snipes?.reactions && typeof raw.snipes.reactions === "object"
+          ? raw.snipes.reactions
+          : {},
+    };
+    state.settings.global = normalizeSettings(raw.settings?.global);
+    state.settings.guilds =
+      raw.settings?.guilds && typeof raw.settings.guilds === "object"
+        ? raw.settings.guilds
+        : {};
+  }
+
+  return state;
+}
+
 function readJsonFile(filePath, fallback) {
   try {
     if (!fs.existsSync(filePath)) {
@@ -172,6 +208,18 @@ function syncLegacyFiles(state) {
   }
 }
 
+function writeLocalBackup(state) {
+  ensureDataDir();
+
+  try {
+    fs.writeFileSync(databasePath, JSON.stringify(state, null, 2));
+  } catch (error) {
+    console.error("Failed to write local database backup:", error);
+  }
+
+  syncLegacyFiles(state);
+}
+
 function bootstrapDatabase() {
   ensureDataDir();
 
@@ -191,47 +239,119 @@ function bootstrapDatabase() {
     state.giveaways = legacyGiveaways;
   }
 
-  fs.writeFileSync(databasePath, JSON.stringify(state, null, 2));
-  syncLegacyFiles(state);
+  writeLocalBackup(state);
 }
 
 function ensureDatabase() {
   bootstrapDatabase();
 }
 
-function readState() {
+function loadLocalState() {
   ensureDatabase();
   const raw = readJsonFile(databasePath, createDefaultState());
-  const state = createDefaultState();
-
-  if (raw && typeof raw === "object") {
-    state.version = raw.version || 1;
-    state.orders = raw.orders && typeof raw.orders === "object" ? raw.orders : {};
-    state.giveaways = Array.isArray(raw.giveaways) ? raw.giveaways : [];
-    state.snipes = {
-      messages:
-        raw.snipes?.messages && typeof raw.snipes.messages === "object"
-          ? raw.snipes.messages
-          : {},
-      reactions:
-        raw.snipes?.reactions && typeof raw.snipes.reactions === "object"
-          ? raw.snipes.reactions
-          : {},
-    };
-    state.settings.global = normalizeSettings(raw.settings?.global);
-    state.settings.guilds =
-      raw.settings?.guilds && typeof raw.settings.guilds === "object"
-        ? raw.settings.guilds
-        : {};
-  }
-
+  const state = normalizeState(raw);
+  writeLocalBackup(state);
   return state;
 }
 
+async function saveStateToSupabase(state) {
+  const normalizedState = normalizeState(state);
+  writeLocalBackup(normalizedState);
+
+  if (!supabase) {
+    return;
+  }
+
+  try {
+    const { error } = await supabase.from("bot_state").upsert(
+      {
+        id: "global",
+        state: normalizedState,
+        updated_at: new Date().toISOString(),
+      },
+      {
+        onConflict: "id",
+      }
+    );
+
+    if (error) {
+      console.error("Failed to save bot state to Supabase:", error);
+    }
+  } catch (error) {
+    console.error("Supabase write crashed for bot_state:", error);
+  }
+}
+
+async function hydrateFromSupabase() {
+  if (hydrationPromise) {
+    return hydrationPromise;
+  }
+
+  hydrationPromise = (async () => {
+    if (!supabase) {
+      const fallbackState = loadLocalState();
+      memoryState = fallbackState;
+      return fallbackState;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from("bot_state")
+        .select("state")
+        .eq("id", "global")
+        .maybeSingle();
+
+      if (error) {
+        console.error("Failed to hydrate bot state from Supabase:", error);
+        const fallbackState = loadLocalState();
+        memoryState = fallbackState;
+        return fallbackState;
+      }
+
+      if (data?.state) {
+        const hydratedState = normalizeState(data.state);
+        memoryState = hydratedState;
+        writeLocalBackup(hydratedState);
+        return hydratedState;
+      }
+
+      const fallbackState = loadLocalState();
+      memoryState = fallbackState;
+      await saveStateToSupabase(fallbackState);
+      return fallbackState;
+    } catch (error) {
+      console.error("Supabase hydration crashed for bot_state:", error);
+      const fallbackState = loadLocalState();
+      memoryState = fallbackState;
+      return fallbackState;
+    }
+  })();
+
+  return hydrationPromise;
+}
+
+function readState() {
+  if (memoryState) {
+    return memoryState;
+  }
+
+  memoryState = loadLocalState();
+
+  if (supabase && !hydrationPromise) {
+    hydrateFromSupabase().catch((error) => {
+      console.error("Background hydration failed:", error);
+    });
+  }
+
+  return memoryState;
+}
+
 function writeState(state) {
-  ensureDatabase();
-  fs.writeFileSync(databasePath, JSON.stringify(state, null, 2));
-  syncLegacyFiles(state);
+  const nextState = normalizeState(state);
+  memoryState = nextState;
+  writeLocalBackup(nextState);
+
+  void saveStateToSupabase(nextState);
 }
 
 function updateState(updater) {
@@ -372,7 +492,9 @@ module.exports = {
   databasePath,
   defaultGlobalSettings,
   normalizeSettings,
+  createDefaultState,
   ensureDatabase,
+  hydrateFromSupabase,
   readState,
   writeState,
   updateState,
