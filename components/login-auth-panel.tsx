@@ -86,7 +86,7 @@ export function LoginAuthPanel({
       />
 
       {localError || message ? (
-        <p className="mt-4 text-sm text-[#c4b5fd]">{localError || message}</p>
+        <p className="mt-4 text-sm text-white/80">{localError || message}</p>
       ) : null}
 
       <div className="mt-6 flex flex-col items-start gap-3">
@@ -106,14 +106,14 @@ export function LoginAuthPanel({
             type="button"
             onClick={handleContinue}
             disabled={!turnstileToken || isSubmitting}
-            className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)] disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:shadow-none"
+            className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-white"
           >
             {isSubmitting ? "Checking..." : "Continue with Discord"}
           </button>
         ) : (
           <a
             href={directLoginHref}
-            className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)]"
+            className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
           >
             Continue with Discord
           </a>
