@@ -1,7 +1,7 @@
 export const BRAND_NAME = "Pending";
-export const BRAND_SUBLABEL = "premium digital products";
+export const BRAND_SUBLABEL = "Pending";
 export const SITE_DESCRIPTION =
-  "Digital goods, Discord support, fast delivery, and clean order tracking.";
+  "/Pending";
 export const DISCORD_INVITE_URL = "https://discord.gg/pending";
 
 export const NAV_LINKS = [
