@@ -2547,9 +2547,8 @@ if (claimedId && claimedId !== openerId) {
   .setCustomId("vouch_order_id")
   .setLabel("Order ID (optional)")
   .setStyle(TextInputStyle.Short)
-  .setRequired(false)
-    .setPlaceholder("PND-1000")
-    .setRequired(true);
+  .setPlaceholder("PND-1000")
+  .setRequired(false);
 
   const noteInput = new TextInputBuilder()
     .setCustomId("vouch_note")
