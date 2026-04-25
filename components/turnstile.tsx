@@ -142,7 +142,7 @@ export function Turnstile({
     <div className={className}>
       <div ref={containerRef} />
       {error ? (
-        <p className="mt-3 text-sm text-[#c4b5fd]">{error}</p>
+        <p className="mt-3 text-sm text-white/80">{error}</p>
       ) : null}
     </div>
   );
