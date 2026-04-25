@@ -2601,29 +2601,33 @@ if (interaction.isModalSubmit()) {
   // ===== VOUCH =====
   if (interaction.customId === "vouch_modal") {
     await interaction.deferReply({ flags: 64 });
-  const orderIdRaw = interaction.fields.getTextInputValue("vouch_order_id");
-  const orderId = orderIdRaw?.trim() || null;
-  const note = interaction.fields.getTextInputValue("vouch_note");
+  const rawOrderId = interaction.fields.getTextInputValue("vouch_order_id");
+const orderId = rawOrderId?.trim() || "";
+const note = interaction.fields.getTextInputValue("vouch_note");
 
-  let order;
+let order = null;
+
+if (orderId) {
   try {
     order = await fetchOrderById(orderId);
   } catch (error) {
     return interaction.editReply({
-  content: `invalid order id: ${orderId}`,
-});
+      content: `invalid order id: ${orderId}`,
+    });
   }
+
   if (order.discord_user_id && order.discord_user_id !== interaction.user.id) {
     return interaction.editReply({
-  content: "that order does not belong to you",
-});
+      content: "that order does not belong to you",
+    });
   }
-  if (order.status === "vouched") {
- return interaction.editReply({
-  content: "this order has already been vouched",
-});
-}
 
+  if (order.status === "vouched") {
+    return interaction.editReply({
+      content: "this order has already been vouched",
+    });
+  }
+}
   const embed = new EmbedBuilder()
     .setColor(0x57f287)
     .setTitle("✅ Vouch")
