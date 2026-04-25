@@ -26,7 +26,7 @@ export const metadata = {
   },
   description: SITE_DESCRIPTION,
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.ico?v=2",
   },
 };
 
