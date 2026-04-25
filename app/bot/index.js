@@ -2635,7 +2635,7 @@ if (orderId) {
       { name: "Order ID", value: order?.order_id || orderId || "N/A", inline: true },
       {
         name: "Buyer",
-        value: order.discord_user_id ? `<@${order.discord_user_id}>` : "Unknown",
+        value: order?.discord_user_id ? `<@${order.discord_user_id}>` : `${interaction.user}`,
         inline: true,
       },
       {
@@ -2659,7 +2659,7 @@ if (orderId) {
         inline: false,
       }
     )
-    .setFooter({ text: "/pending | pending.cc" });
+    .setFooter({ text: "/Pending | pending.cc" });
 
   await vouchChannel.send({ embeds: [embed] });
 
