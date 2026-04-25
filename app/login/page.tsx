@@ -38,7 +38,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="page-transition mx-auto max-w-6xl px-4 py-16">
       <section className="grid items-center gap-12 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="max-w-2xl">
-          <p className="font-mono text-xs uppercase tracking-[0.22em] text-[#8b5cf6]">
+          <p className="font-mono text-xs uppercase tracking-[0.22em] text-white/40">
             Access
           </p>
           <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white">
@@ -78,10 +78,10 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           </div>
         </div>
 
-        <aside className="rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(139,92,246,0.07),rgba(0,0,0,0)_22%)] bg-black/20 p-6 sm:p-7">
+        <aside className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 sm:p-7">
           {viewer ? (
             <>
-              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[#8b5cf6]">
+              <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
                 Active session
               </p>
               <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
@@ -101,7 +101,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href={primaryHref}
-                  className="rounded-lg bg-[#8b5cf6] px-4 py-3 text-sm font-medium text-white transition hover:opacity-90 hover:shadow-[0_0_16px_rgba(139,92,246,0.22)]"
+                  className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
                 >
                   Continue
                 </Link>
