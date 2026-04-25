@@ -2544,9 +2544,10 @@ if (claimedId && claimedId !== openerId) {
     .setTitle("Submit Vouch");
 
   const orderInput = new TextInputBuilder()
-    .setCustomId("vouch_order_id")
-    .setLabel("Order ID")
-    .setStyle(TextInputStyle.Short)
+  .setCustomId("vouch_order_id")
+  .setLabel("Order ID (optional)")
+  .setStyle(TextInputStyle.Short)
+  .setRequired(false)
     .setPlaceholder("PND-1000")
     .setRequired(true);
 
@@ -2601,7 +2602,8 @@ if (interaction.isModalSubmit()) {
   // ===== VOUCH =====
   if (interaction.customId === "vouch_modal") {
     await interaction.deferReply({ flags: 64 });
-  const orderId = interaction.fields.getTextInputValue("vouch_order_id").trim();
+  const orderIdRaw = interaction.fields.getTextInputValue("vouch_order_id");
+  const orderId = orderIdRaw?.trim() || null;
   const note = interaction.fields.getTextInputValue("vouch_note");
 
   let order;
