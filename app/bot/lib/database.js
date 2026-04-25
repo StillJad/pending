@@ -291,6 +291,7 @@ async function hydrateFromSupabase() {
     if (!supabase) {
       const fallbackState = loadLocalState();
       memoryState = fallbackState;
+      console.log("Using local memory fallback");
       return fallbackState;
     }
 
@@ -305,6 +306,7 @@ async function hydrateFromSupabase() {
         console.error("Failed to hydrate bot state from Supabase:", error);
         const fallbackState = loadLocalState();
         memoryState = fallbackState;
+        console.log("Using local memory fallback");
         return fallbackState;
       }
 
@@ -312,17 +314,20 @@ async function hydrateFromSupabase() {
         const hydratedState = normalizeState(data.state);
         memoryState = hydratedState;
         writeLocalBackup(hydratedState);
+        console.log("Supabase memory loaded");
         return hydratedState;
       }
 
       const fallbackState = loadLocalState();
       memoryState = fallbackState;
       await saveStateToSupabase(fallbackState);
+      console.log("Using local memory fallback");
       return fallbackState;
     } catch (error) {
       console.error("Supabase hydration crashed for bot_state:", error);
       const fallbackState = loadLocalState();
       memoryState = fallbackState;
+      console.log("Using local memory fallback");
       return fallbackState;
     }
   })();
