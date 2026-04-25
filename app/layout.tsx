@@ -46,7 +46,7 @@ export default async function RootLayout({
               <div className="relative py-4">
                 <SiteNav viewer={viewer} />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#d946ef]/60 to-transparent" />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               </div>
             </div>
           </header>
