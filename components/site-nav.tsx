@@ -83,7 +83,7 @@ function PendingLogo() {
             event.currentTarget.style.display = "none";
           }}
         />
-        <span className="absolute text-sm font-black tracking-tight text-white/90">P</span>
+        <span className="absolute text-sm font-black tracking-tight text-white/90"></span>
       </div>
       <span className="text-lg font-black tracking-tight text-white">Pending</span>
     </Link>
