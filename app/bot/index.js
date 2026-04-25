@@ -1146,11 +1146,11 @@ if (
       .setColor(0x57f287)
       .setTitle("Proof Submitted")
       .addFields(
-        { name: "Order ID", value: order.order_id || pendingProof.orderId, inline: true },
-        { name: "Buyer", value: order.discord_user_id ? `<@${order.discord_user_id}>` : "Unknown", inline: true },
+        { name: "Order ID", value: order?.order_id || orderId || "N/A", inline: true },
+        { name: "Buyer", value: order?.discord_user_id ? `<@${order.discord_user_id}>` : `${interaction.user}`, inline: true },
         { name: "Seller", value: `${message.author}`, inline: true },
-        { name: "Payment", value: order.payment_method || "Not set", inline: true },
-        { name: "Product", value: order.product || "Not set", inline: false },
+        { name: "Payment", value: order?.payment_method || "Not linked", inline: true },
+        { name: "Product", value: order?.product || "Not linked", inline: false },
         { name: "Channel", value: `${message.channel}`, inline: false }
       )
       .setImage(attachment.url)
@@ -2645,12 +2645,12 @@ if (orderId) {
       },
       {
         name: "Product",
-        value: order.product || "Not set",
+        value: order?.product || "Not linked",
         inline: true,
       },
       {
         name: "Payment",
-        value: order.payment_method || "Not set",
+        value: order?.payment_method || "Not linked",
         inline: true,
       },
       {
