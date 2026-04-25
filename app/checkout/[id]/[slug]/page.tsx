@@ -126,7 +126,7 @@ export default function CheckoutPage() {
             </div>
             <div className="flex items-center justify-between border-t border-white/5 pt-4">
               <span className="ui-overline">Route</span>
-              <span className="font-mono text-sm uppercase tracking-[0.16em] text-[#8b5cf6]">
+              <span className="font-mono text-sm uppercase tracking-[0.16em] text-white/80">
                 cart / discord
               </span>
             </div>
@@ -138,7 +138,7 @@ export default function CheckoutPage() {
         <div className="ui-panel p-7">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div className="flex items-start gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 font-mono text-sm uppercase text-[#8b5cf6]">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 font-mono text-sm uppercase text-white/80">
                 {getMonogram(product.name)}
               </div>
 
@@ -155,7 +155,7 @@ export default function CheckoutPage() {
 
             <div className="rounded-2xl border border-white/10 p-4 text-left lg:min-w-[190px] lg:text-right">
               <p className="ui-overline">Unit price</p>
-              <p className="mt-2 font-mono text-3xl text-[#8b5cf6]">
+              <p className="mt-2 font-mono text-3xl text-white">
                 {formatCurrency(unitPrice)}
               </p>
             </div>
@@ -206,7 +206,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setQuantity((current) => Math.max(1, current - 1))}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-white/20 hover:text-white"
                 disabled={quantity === 1}
               >
                 -
@@ -217,7 +217,7 @@ export default function CheckoutPage() {
               <button
                 type="button"
                 onClick={() => setQuantity((current) => current + 1)}
-                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
+                className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-white/20 hover:text-white"
               >
                 +
               </button>
@@ -227,7 +227,7 @@ export default function CheckoutPage() {
           <div className="mt-6 rounded-2xl border border-white/10 p-5">
             <div className="flex items-center justify-between">
               <span className="ui-overline">Total</span>
-              <span className="font-mono text-3xl text-[#8b5cf6]">
+              <span className="font-mono text-3xl text-white">
                 {formatCurrency(total)}
               </span>
             </div>
