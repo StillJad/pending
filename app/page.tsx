@@ -18,15 +18,15 @@ const heroPills = [
 const reviews = [
   {
     quote: "Orders are clean, support replies fast, and the whole flow feels intentional.",
-    name: "Repeat buyer",
+    name: "Tenman",
   },
   {
     quote: "Pending feels tighter than most Discord-first stores. Less friction, better follow-through.",
-    name: "Private client",
+    name: "_mandate",
   },
   {
-    quote: "Good catalog, good delivery, no weird guessing games after checkout.",
-    name: "Marketplace customer",
+    quote: "Good catalog, good delivery",
+    name: "Relits",
   },
 ] as const;
 
@@ -43,7 +43,7 @@ const comparisonWeaknesses = [
   "Slow support",
   "Messy delivery",
   "Unclear status",
-  "Weak refund policy",
+  "dumbass owners",
   "Random product quality",
   "Basic security",
 ] as const;
