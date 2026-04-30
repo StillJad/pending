@@ -250,7 +250,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.id, -1)}
-                        className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
+                        className="h-10 w-10 rounded-lg border border-white/10 text-white/85 transition hover:border-white/25 hover:text-white"
                         disabled={item.quantity === 1}
                       >
                         -
@@ -261,7 +261,7 @@ export default function CartPage() {
                       <button
                         type="button"
                         onClick={() => updateQuantity(item.id, 1)}
-                        className="h-10 w-10 rounded-lg border border-white/10 text-white/80 transition hover:border-[#8b5cf6]/50 hover:text-white"
+                        className="h-10 w-10 rounded-lg border border-white/10 text-white/85 transition hover:border-white/25 hover:text-white"
                       >
                         +
                       </button>
