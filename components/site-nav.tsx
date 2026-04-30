@@ -83,7 +83,7 @@ function PendingLogo() {
             event.currentTarget.style.display = "none";
           }}
         />
-        <span className="absolute text-sm font-black tracking-tight text-white/90"></span>
+        <span className="absolute text-sm font-black tracking-tight text-white/90">P</span>
       </div>
       <span className="text-lg font-black tracking-tight text-white">Pending</span>
     </Link>
@@ -97,7 +97,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
   return (
     <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
       <PendingLogo />
-      <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold text-white/62 md:justify-center">
+      <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold text-white/75 md:justify-center">
         {NAV_LINKS.map((item) => {
           const active = isActive(pathname, item.href);
 
@@ -107,7 +107,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={`transition ${
-                active ? "text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.22)]" : "text-white/58 hover:text-white"
+                active ? "text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.22)]" : "text-white/72 hover:text-white"
               }`}
             >
               {item.label}
@@ -120,7 +120,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
         <Link
           href="/cart"
           aria-label="Cart"
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/[0.035] text-white/80 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.07] hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
         >
           <CartIcon />
         </Link>
@@ -129,7 +129,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
           href={DISCORD_INVITE_URL}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.035] px-5 py-3 text-sm font-semibold text-white/88 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.07] hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
+          className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
         >
           <DiscordIcon />
           Discord
@@ -137,7 +137,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
 
         {viewer ? (
           <>
-            <div className="inline-flex items-center gap-3 rounded-2xl border border-white/12 bg-white/[0.035] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <div className="inline-flex items-center gap-3 rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
               {viewer.avatar ? (
                 <img
                   src={viewer.avatar}
@@ -145,7 +145,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
                   className="h-8 w-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-xs font-semibold text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white text-xs font-semibold text-black">
                   {viewer.username.slice(0, 1).toUpperCase()}
                 </div>
               )}
@@ -156,7 +156,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
 
             <a
               href="/logout"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.035] px-5 py-3 text-sm font-semibold text-white/80 transition hover:border-white/30 hover:bg-white/[0.07] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
             >
               Logout
             </a>
