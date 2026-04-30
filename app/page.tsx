@@ -18,15 +18,15 @@ const heroPills = [
 const reviews = [
   {
     quote: "Orders are clean, support replies fast, and the whole flow feels intentional.",
-    name: "Tenman",
+    name: "Repeat buyer",
   },
   {
     quote: "Pending feels tighter than most Discord-first stores. Less friction, better follow-through.",
-    name: "_mandate",
+    name: "Private client",
   },
   {
-    quote: "Good catalog, good delivery",
-    name: "Relits",
+    quote: "Good catalog, good delivery, no weird guessing games after checkout.",
+    name: "Marketplace customer",
   },
 ] as const;
 
@@ -43,7 +43,7 @@ const comparisonWeaknesses = [
   "Slow support",
   "Messy delivery",
   "Unclear status",
-  "dumbass owners",
+  "Weak refund policy",
   "Random product quality",
   "Basic security",
 ] as const;
@@ -227,7 +227,7 @@ export default function Home() {
                       {product.name}
                     </h3>
                   </div>
-                  <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-white/65">
+                  <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-semibold text-white/90">
                     Verified
                   </span>
                 </div>
@@ -253,7 +253,7 @@ export default function Home() {
           <article key={review.name} className="ui-panel p-6">
             <div className="flex items-center justify-between">
               <span className="ui-overline">0{index + 1}</span>
-              <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-white/62">
+              <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-semibold text-white/90">
                 trusted
               </span>
             </div>
@@ -285,7 +285,7 @@ export default function Home() {
                   </p>
                   <p className="mt-2 text-sm text-white/56">score 10/10</p>
                 </div>
-                <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm font-semibold text-white">
+                <span className="rounded-full border border-white/20 bg-white px-3 py-1 text-sm font-semibold text-black">
                   premium
                 </span>
               </div>
@@ -296,7 +296,7 @@ export default function Home() {
                     key={item}
                     className="flex items-center gap-3 rounded-2xl border border-white/15 bg-white/[0.05] px-4 py-4"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-sm font-semibold text-white">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-semibold text-black">
                       +
                     </span>
                     <span className="text-sm text-white/86">{item}</span>
@@ -313,7 +313,7 @@ export default function Home() {
                   </p>
                   <p className="mt-2 text-sm text-white/56">score 6/10</p>
                 </div>
-                <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-sm font-semibold text-white/62">
+                <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-sm font-semibold text-white/90">
                   mixed
                 </span>
               </div>
@@ -324,7 +324,7 @@ export default function Home() {
                     key={item}
                     className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/[0.02] px-4 py-4"
                   >
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.05] text-sm font-semibold text-white/62">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/[0.08] text-sm font-semibold text-white/90">
                       -
                     </span>
                     <span className="text-sm text-white/62">{item}</span>
@@ -356,7 +356,7 @@ export default function Home() {
               open={index === 0}
             >
               <summary className="flex cursor-pointer items-center gap-5 px-5 py-5 sm:px-7">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white/10 text-base font-semibold text-white">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-white text-base font-semibold text-black">
                   {index + 1}
                 </span>
                 <span className="flex-1 text-left text-xl font-semibold tracking-tight text-white">
@@ -422,7 +422,7 @@ export default function Home() {
 
           <div className="mt-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 text-lg font-semibold text-white">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-lg font-semibold text-black">
                 P
               </div>
               <div>
@@ -439,13 +439,13 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-2xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-2xl border border-white/20 bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90"
             >
               Join
             </a>
           </div>
 
-          <div className="mt-6 inline-flex items-center rounded-full border border-[#47ff8a]/24 bg-[#47ff8a]/10 px-4 py-2 text-sm text-white/86">
+          <div className="mt-6 inline-flex items-center rounded-full border border-white/15 bg-white/[0.06] px-4 py-2 text-sm text-white/90">
             Live updating...
           </div>
 
@@ -458,7 +458,7 @@ export default function Home() {
                 <p className="text-3xl font-semibold tracking-tight text-white">
                   {stat.value}
                 </p>
-                <p className="mt-2 text-sm text-white/52">{stat.label}</p>
+                <p className="mt-2 text-sm text-white/68">{stat.label}</p>
               </div>
             ))}
           </div>
