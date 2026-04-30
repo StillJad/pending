@@ -47,7 +47,7 @@ export function ProductCardMedia({
             />
           ) : (
             <div>
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/44">
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/70">
                 {previewLabel}
               </span>
               <p className="mt-2 text-3xl font-semibold tracking-[-0.08em] text-white">
