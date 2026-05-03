@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Turnstile } from "@/components/turnstile";
-import { products } from "@/data/products";
+import { products } from "@/lib/products";
 import { formatCurrency, getMonogram, parsePrice } from "@/lib/site";
 
 type CartItem = {
