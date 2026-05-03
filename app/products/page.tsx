@@ -43,13 +43,12 @@ export default async function ProductsPage({
 
   const filteredProducts = query
     ? catalog.filter((product) =>
-        [
-          product.name,
-          product.category,
-          product.description,
-          product.duration,
-          product.tag,
-        ]
+       [
+  product.name,
+  product.description,
+  product.duration,
+  product.badge,
+]
           .join(" ")
           .toLowerCase()
           .includes(query)
