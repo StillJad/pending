@@ -62,7 +62,7 @@ export function ProductCard({
             <p className="text-sm text-white/70">{product.duration}</p>
           </div>
           <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/90">
-            {product.tag}
+            {product.badge}
           </span>
         </div>
 
