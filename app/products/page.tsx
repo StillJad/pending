@@ -1,9 +1,8 @@
 import Link from "next/link";
-import { products } from "@/data/products";
+import { ProductCard } from "@/components/product-card";
+import { products } from "@/lib/products";
 import {
   BRAND_NAME,
-  formatCurrency,
-  getMonogram,
   parsePrice,
 } from "@/lib/site";
 
@@ -11,10 +10,6 @@ type ProductsPageProps = {
   searchParams: Promise<{
     q?: string;
   }>;
-};
-
-type ProductWithAmount = (typeof products)[number] & {
-  amount: number;
 };
 
 function SearchIcon() {
@@ -35,43 +30,13 @@ function SearchIcon() {
   );
 }
 
-function buildStockLabel(id: number) {
-  const states = [
-    "in stock",
-    "verified",
-    "instant",
-    "fast delivery",
-    "private access",
-  ];
-
-  return states[id % states.length];
-}
-
-function getProductIcon(product: ProductWithAmount) {
-  return "icon" in product && typeof product.icon === "string"
-    ? product.icon
-    : "";
-}
-
-function getProductBadge(product: ProductWithAmount) {
-  return "badge" in product && typeof product.badge === "string"
-    ? product.badge
-    : "Live";
-}
-
-function getProductDuration(product: ProductWithAmount) {
-  return "duration" in product && typeof product.duration === "string"
-    ? product.duration
-    : "Digital";
-}
-
 export default async function ProductsPage({
   searchParams,
 }: ProductsPageProps) {
   const params = await searchParams;
   const query = (params.q ?? "").trim().toLowerCase();
 
-  const catalog: ProductWithAmount[] = products.map((product) => ({
+  const catalog = products.map((product) => ({
     ...product,
     amount: parsePrice(product.price),
   }));
@@ -82,8 +47,8 @@ export default async function ProductsPage({
           product.name,
           product.category,
           product.description,
-          getProductDuration(product),
-          getProductBadge(product),
+          product.duration,
+          product.tag,
         ]
           .join(" ")
           .toLowerCase()
@@ -161,73 +126,9 @@ export default async function ProductsPage({
         </section>
       ) : (
         <section className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredProducts.map((product) => {
-            const icon = getProductIcon(product);
-            const badge = getProductBadge(product);
-            const duration = getProductDuration(product);
-
-            return (
-              <Link
-                key={product.id}
-                href={`/checkout/${product.id}/${product.slug}`}
-                className="pending-product-card block"
-              >
-                <div className="pending-product-media">
-                  <span className="pending-stock-badge bg-black/40 px-3 py-1 text-[11px] uppercase tracking-wider text-white/90 backdrop-blur">
-                    {buildStockLabel(product.id)}
-                  </span>
-
-                  <div className="pending-product-box flex flex-col items-center justify-center text-center">
-                    {icon ? (
-                      <img
-                        src={icon}
-                        alt=""
-                        className="mb-3 h-14 w-14 rounded-2xl object-contain"
-                      />
-                    ) : null}
-                    <span className="text-xs uppercase tracking-[0.28em] text-white/42">
-                      discord.gg/pending
-                    </span>
-                    <strong className="mt-2 text-3xl tracking-tight text-white">
-                      {getMonogram(product.name)}
-                    </strong>
-                  </div>
-
-                  <div className="pending-product-title">
-                    {product.category}
-                    <br />
-                    {product.name.split(" ").slice(0, 2).join(" ")}
-                  </div>
-                </div>
-
-                <div className="px-6 py-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="ui-overline">{product.category}</p>
-                      <h2 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                        {product.name}
-                      </h2>
-                      <p className="mt-1 text-sm text-white/65">{duration}</p>
-                    </div>
-                    <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-semibold text-white/90">
-                      {badge}
-                    </span>
-                  </div>
-
-                  <p className="mt-3 text-sm leading-6 text-white/58">
-                    {product.description}
-                  </p>
-
-                  <div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4">
-                    <span className="text-xl font-semibold text-white">
-                      {formatCurrency(product.amount)}
-                    </span>
-                    <span className="text-sm text-white/52">Open checkout</span>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {filteredProducts.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </section>
       )}
     </main>
