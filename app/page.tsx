@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { products } from "@/data/products";
+import { ProductCard } from "@/components/product-card";
+import { products } from "@/lib/products";
 import {
   BRAND_NAME,
   DISCORD_INVITE_URL,
-  formatCurrency,
-  getMonogram,
   parsePrice,
 } from "@/lib/site";
 
@@ -113,11 +112,6 @@ function ArrowIcon() {
   );
 }
 
-function buildStockLabel(id: number) {
-  const count = (id % 4) + 2;
-  return `${count} products`;
-}
-
 export default function Home() {
   const featuredProducts = products.slice(0, 3).map((product) => ({
     ...product,
@@ -199,51 +193,7 @@ export default function Home() {
 
         <div className="grid gap-5 lg:grid-cols-3">
           {featuredProducts.map((product) => (
-            <Link
-              key={product.id}
-              href={`/checkout/${product.id}/${product.slug}`}
-              className="pending-product-card block"
-            >
-              <div className="pending-product-media">
-                <span className="pending-stock-badge">{buildStockLabel(product.id)}</span>
-
-                <div className="pending-product-box">
-                  <span className="pending-product-mark">{BRAND_NAME}</span>
-                  <strong>{getMonogram(product.name)}</strong>
-                </div>
-
-                <div className="pending-product-title">
-                  {product.category}
-                  <br />
-                  {product.name.split(" ").slice(0, 2).join(" ")}
-                </div>
-              </div>
-
-              <div className="px-6 py-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="ui-overline">{product.category}</p>
-                    <h3 className="mt-3 text-2xl font-semibold tracking-tight text-white">
-                      {product.name}
-                    </h3>
-                  </div>
-                  <span className="rounded-full border border-white/10 bg-white/[0.08] px-3 py-1 text-xs font-semibold text-white/90">
-                    Verified
-                  </span>
-                </div>
-
-                <p className="mt-3 text-sm leading-6 text-white/58">
-                  {product.description}
-                </p>
-
-                <div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4">
-                  <span className="text-xl font-semibold text-white">
-                    {formatCurrency(product.amount)}
-                  </span>
-                  <span className="text-sm text-white/52">View product</span>
-                </div>
-              </div>
-            </Link>
+            <ProductCard key={product.id} product={product} ctaLabel="View product" />
           ))}
         </div>
       </section>
@@ -415,7 +365,7 @@ export default function Home() {
               <span className="h-3 w-3 rounded-full bg-white/20" />
               <span className="h-3 w-3 rounded-full bg-white/20" />
             </div>
-            <span className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-xs font-semibold text-white/66">
+            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/90">
               Instant help
             </span>
           </div>
