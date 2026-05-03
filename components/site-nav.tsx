@@ -120,7 +120,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
         <Link
           href="/cart"
           aria-label="Cart"
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/[0.06] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
         >
           <CartIcon />
         </Link>
@@ -129,7 +129,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
           href={DISCORD_INVITE_URL}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
+          className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
         >
           <DiscordIcon />
           Discord
@@ -156,7 +156,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
 
             <a
               href="/logout"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/14 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/30 hover:bg-white/[0.09] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white"
             >
               Logout
             </a>
