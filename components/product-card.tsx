@@ -35,11 +35,11 @@ export function ProductCard({
                   setImageFailed(true);
                 }}
               />
-            ) : (
-              <span className="text-sm font-semibold tracking-[0.14em] text-white/90">
+          ) : (
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white text-sm font-semibold tracking-[0.14em] text-black">
                 {getMonogram(product.category)}
-              </span>
-            )}
+              </div>
+          )}
           </div>
 
           <div className="min-w-0 flex-1">
@@ -61,7 +61,7 @@ export function ProductCard({
           <div>
             <p className="text-sm text-white/70">{product.duration}</p>
           </div>
-          <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/90">
+          <span className="rounded-full border border-white/20 bg-white px-3 py-1 text-xs font-semibold text-black">
             {product.badge}
           </span>
         </div>
