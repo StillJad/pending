@@ -1,10 +1,6 @@
-export default function PricesPage() {
-  const products = [
-    { id: 1, name: "Spotify Premium", price: "$3.00", category: "Spotify" },
-    { id: 2, name: "Discord Nitro", price: "$7.99", category: "Discord" },
-    { id: 3, name: "Roblox Product", price: "$5.00", category: "Roblox" },
-  ];
+import { products } from "@/lib/products";
 
+export default function PricesPage() {
   return (
     <main className="min-h-screen bg-black px-6 py-10 text-white">
       <div className="mx-auto max-w-5xl">
@@ -21,7 +17,7 @@ export default function PricesPage() {
             >
               <p className="text-sm text-white/50">{product.category}</p>
               <h2 className="mt-2 text-xl font-semibold">{product.name}</h2>
-              <p className="mt-4 text-2xl font-bold">{product.price}</p>
+              <p className="mt-4 text-2xl font-bold">${product.price.toFixed(2)}</p>
             </div>
           ))}
         </div>
