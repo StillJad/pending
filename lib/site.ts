@@ -1,15 +1,12 @@
 export const BRAND_NAME = "Pending";
-export const BRAND_SUBLABEL = "Pending";
+export const BRAND_SUBLABEL = "premium digital products";
 export const SITE_DESCRIPTION =
-  "/pending";
+  "Digital goods, Discord support, fast delivery, and clean order tracking.";
 export const DISCORD_INVITE_URL = "https://discord.gg/pending";
 
 export const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/products", label: "Products" },
-  { href: "/#reviews", label: "Reviews" },
-  { href: "/ticket", label: "Support" },
-  { href: "/Tos", label: "Terms" },
 ] as const;
 
 export function toCategorySlug(category: string) {
