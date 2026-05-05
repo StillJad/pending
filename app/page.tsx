@@ -49,7 +49,10 @@ export default function Home() {
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-            <Link href="/products" className="ui-button-primary">
+            <Link
+              href="/products"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
+            >
               Browse products
               <ArrowIcon />
             </Link>
@@ -57,7 +60,7 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-2xl border border-white/15 bg-black/40 px-5 py-2 text-sm font-semibold text-white hover:bg-black/60"
+              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
             >
               Join Discord
             </a>
@@ -127,7 +130,7 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="ui-button-primary min-w-[220px]"
+              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
             >
               Join Discord
             </a>
@@ -167,7 +170,7 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="rounded-2xl border border-white/20 bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-white/90"
+              className="rounded-2xl border border-white/15 bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
             >
               Join
             </a>
