@@ -2335,11 +2335,11 @@ if (interaction.customId.startsWith("deny_vouch:")) {
           throw new Error(`invalid order api json: ${rawOrderResponse}`);
         }
 
-        if (!orderRes.ok || !orderData.success || !orderData.orderId) {
+        if (!orderRes.ok || !orderData.success || !(orderData.orderId || orderData.order_id)) {
           throw new Error(`failed to create order: ${rawOrderResponse}`);
         }
 
-        orderId = orderData.orderId;
+        orderId = orderData.orderId || orderData.order_id;
       } catch (error) {
         console.error("create_ticket order creation failed:", error);
         await channel.delete().catch(() => {});
