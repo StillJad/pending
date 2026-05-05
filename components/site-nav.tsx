@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { DISCORD_INVITE_URL, NAV_LINKS } from "@/lib/site";
 
@@ -71,7 +72,7 @@ function LoginIcon() {
   );
 }
 
-function PendingLogo() {
+function PendingLogo({ compact }: { compact: boolean }) {
   return (
     <Link
       href="/"
@@ -88,7 +89,13 @@ function PendingLogo() {
         />
         <span className="absolute text-xs font-bold text-white">P</span>
       </div>
-      <span className="text-sm font-semibold text-white">Pending</span>
+      <span
+        className={`hidden text-sm font-semibold text-white transition-all duration-300 sm:inline ${
+          compact ? "max-w-0 overflow-hidden opacity-0" : "max-w-[90px] opacity-100"
+        }`}
+      >
+        Pending
+      </span>
     </Link>
   );
 }
@@ -96,11 +103,51 @@ function PendingLogo() {
 export function SiteNav({ viewer }: SiteNavProps) {
   const pathname = usePathname() || "/";
   const loginHref = `/api/auth/discord?next=${encodeURIComponent(pathname)}`;
+  const [compact, setCompact] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setCompact(window.scrollY > 28);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const activeIndex = NAV_LINKS.findIndex((item) => isActive(pathname, item.href));
 
   return (
-    <div className="mx-auto flex w-fit max-w-full items-center gap-2 rounded-full border border-white/12 bg-black/35 px-2.5 py-2 shadow-[0_18px_55px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
-      <PendingLogo />
-      <nav className="flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.035] p-1">
+    <div
+      className={`mx-auto flex w-fit max-w-[calc(100vw-1.5rem)] items-center gap-2 rounded-full border border-white/12 bg-black/25 px-2.5 shadow-[0_18px_55px_rgba(0,0,0,0.35)] backdrop-blur-2xl transition-all duration-300 ${
+        compact ? "py-1.5 scale-[0.94]" : "py-2 scale-100"
+      }`}
+    >
+      <PendingLogo compact={compact} />
+
+      <nav className="relative flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.035] p-1">
+        {activeIndex >= 0 ? (
+          <span
+            aria-hidden="true"
+            className="absolute inset-y-1 rounded-full bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_0_28px_rgba(255,255,255,0.16)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            style={{
+              width: `calc((100% - ${(NAV_LINKS.length - 1) * 0.25}rem) / ${NAV_LINKS.length})`,
+              transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
+              filter: "url(#liquid-nav-goo)",
+            }}
+          />
+        ) : null}
+
+        <svg className="pointer-events-none absolute h-0 w-0" aria-hidden="true">
+          <filter id="liquid-nav-goo">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
+            <feColorMatrix
+              in="blur"
+              mode="matrix"
+              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+              result="goo"
+            />
+            <feBlend in="SourceGraphic" in2="goo" />
+          </filter>
+        </svg>
+
         {NAV_LINKS.map((item) => {
           const active = isActive(pathname, item.href);
 
@@ -109,10 +156,10 @@ export function SiteNav({ viewer }: SiteNavProps) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`${
+              className={`relative z-10 min-w-[82px] rounded-full px-3 py-1.5 text-center text-sm transition-colors duration-300 ${
                 active
-                  ? "rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-black transition"
-                  : "rounded-full px-3 py-1.5 text-sm font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
+                  ? "font-semibold text-black"
+                  : "font-medium text-white/72 hover:text-white"
               }`}
             >
               {item.label}
@@ -125,7 +172,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
         <Link
           href="/cart"
           aria-label="Cart"
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-white transition hover:bg-white/[0.1]"
         >
           <CartIcon />
         </Link>
@@ -137,12 +184,12 @@ export function SiteNav({ viewer }: SiteNavProps) {
           className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
         >
           <DiscordIcon />
-          Discord
+          <span className={compact ? "hidden lg:inline" : "hidden sm:inline"}>Discord</span>
         </a>
 
         {viewer ? (
           <>
-            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]">
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-2 py-1 text-sm font-semibold text-white transition hover:bg-white/[0.1]">
               {viewer.avatar ? (
                 <img
                   src={viewer.avatar}
@@ -154,7 +201,11 @@ export function SiteNav({ viewer }: SiteNavProps) {
                   {viewer.username.slice(0, 1).toUpperCase()}
                 </div>
               )}
-              <span className="max-w-[112px] truncate text-sm font-semibold text-white">
+              <span
+                className={`max-w-[112px] truncate text-sm font-semibold text-white transition-all duration-300 ${
+                  compact ? "hidden xl:inline" : "hidden md:inline"
+                }`}
+              >
                 {viewer.username}
               </span>
             </div>
@@ -172,7 +223,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
             className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
           >
             <LoginIcon />
-            Login
+            <span className={compact ? "hidden lg:inline" : "hidden sm:inline"}>Login</span>
           </a>
         )}
       </div>
