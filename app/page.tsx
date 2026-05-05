@@ -44,14 +44,11 @@ export default function Home() {
           </p>
 
           <h1 className="mx-auto mt-9 max-w-5xl text-5xl font-black tracking-[-0.08em] text-white sm:text-7xl lg:text-8xl">
-            Premium digital products,
-            <br />
-            delivered through Discord.
+            The Best Supplier.
           </h1>
 
           <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
-            A clean catalog for Discord, AI, streaming, gaming, and Brawl Stars products.
-            Pick what you need and continue from there.
+            I NEED HELP BRUH NIGGER
           </p>
 
           <div className="mt-11 flex flex-wrap items-center justify-center gap-4">
