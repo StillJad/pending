@@ -26,6 +26,7 @@ export const metadata = {
   },
   description: SITE_DESCRIPTION,
 };
+
 export default async function RootLayout({
   children,
 }: {
@@ -40,17 +41,15 @@ export default async function RootLayout({
       >
         <BackgroundParticles />
         <div className="min-h-screen">
-          <header className="sticky top-0 z-50 border-b border-white/8 bg-[#07070a]/82 backdrop-blur-xl">
+          <header className="pointer-events-none fixed inset-x-0 top-3 z-50 bg-transparent">
             <div className="relative z-10 mx-auto max-w-[1240px] px-4">
-              <div className="relative py-4">
+              <div className="pointer-events-auto relative flex justify-center">
                 <SiteNav viewer={viewer} />
-
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
               </div>
             </div>
           </header>
 
-          <main className="relative z-10 mx-auto w-full max-w-[1240px] px-4 py-10 sm:py-12">
+          <main className="relative z-10 mx-auto w-full max-w-[1240px] px-4 pb-10 pt-28 sm:pb-12 sm:pt-32">
             {children}
           </main>
 
