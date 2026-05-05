@@ -22,29 +22,33 @@ function ArrowIcon() {
 }
 
 export default function Home() {
-  const featuredProducts = products.slice(0, 3).map((product) => ({
-    ...product,
-    amount: parsePrice(product.price),
-  }));
+  // pick better featured products: top 3 by price (simple + not random)
+  const featuredProducts = [...products]
+    .map((p) => ({ ...p, amount: parsePrice(p.price) }))
+    .sort((a, b) => b.amount - a.amount)
+    .slice(0, 3);
 
   return (
-    <main className="page-transition space-y-10 sm:space-y-14">
+    <main className="page-transition space-y-12 sm:space-y-16">
+      {/* HERO */}
       <section className="ui-panel relative overflow-hidden px-6 py-16 sm:px-10 sm:py-20">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/24 to-transparent" />
 
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <span className="pending-badge">
             <span className="pending-dot" />
-            Clean digital storefront
+            fast digital delivery
           </span>
 
           <h1 className="mx-auto mt-8 max-w-4xl text-5xl font-semibold tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl">
-            Buy digital products without the clutter.
+            Buy digital products
+            <br />
+            without getting scammed.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/68 sm:text-lg">
-            {BRAND_NAME} keeps the storefront simple: browse products, open
-            checkout, and continue delivery through Discord.
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
+            Real products, fast delivery, and support through Discord. No fake
+            promises, no weird checkout flows.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -64,6 +68,24 @@ export default function Home() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
+      <section className="grid gap-5 sm:grid-cols-3">
+        {[
+          ["1. Browse", "Pick what you want from the catalog"],
+          ["2. Checkout", "Open checkout instantly on-site"],
+          ["3. Delivery", "Get everything through Discord"],
+        ].map(([title, desc]) => (
+          <div
+            key={title}
+            className="ui-panel p-5 text-center"
+          >
+            <p className="text-sm font-semibold text-white">{title}</p>
+            <p className="mt-2 text-sm text-white/65">{desc}</p>
+          </div>
+        ))}
+      </section>
+
+      {/* FEATURED */}
       <section id="products" className="space-y-8">
         <div className="text-center">
           <p className="ui-overline ui-overline-accent">Catalog</p>
@@ -71,31 +93,36 @@ export default function Home() {
             Featured products
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-white/68">
-            A quick look at the storefront before you jump into the full catalog.
+            The most popular stuff people actually buy.
           </p>
         </div>
 
         <div className="grid gap-5 lg:grid-cols-3">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} ctaLabel="View product" />
+            <ProductCard
+              key={product.id}
+              product={product}
+              ctaLabel="View product"
+            />
           ))}
         </div>
       </section>
 
+      {/* CTA / DISCORD */}
       <section className="pending-cta grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div>
           <span className="pending-badge">
             <span className="pending-dot" />
-            Discord-based delivery
+            discord delivery
           </span>
 
           <h2 className="mt-8 text-4xl font-semibold tracking-[-0.07em] text-white sm:text-5xl">
-            Need delivery or support?
+            Need help or delivery?
           </h2>
 
           <p className="mt-5 max-w-xl text-base leading-8 text-white/72">
-            Checkout stays on-site, and support, delivery, and follow-up all
-            continue in Discord.
+            Everything continues in Discord. Faster support, easier delivery,
+            no waiting.
           </p>
 
           <div className="mt-8">
@@ -124,15 +151,18 @@ export default function Home() {
 
           <div className="mt-8 flex items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-lg font-semibold text-black">
-                P
-              </div>
+              <img
+                src="/server-icon.png"
+                className="h-14 w-14 rounded-2xl object-cover"
+                alt="server"
+                onError={(e) => (e.currentTarget.style.display = "none")}
+              />
               <div>
                 <p className="text-2xl font-semibold tracking-tight text-white">
                   {BRAND_NAME}
                 </p>
                 <p className="mt-1 text-sm text-white/68">
-                  Orders, delivery, and follow-up in one place
+                  Orders, delivery, and support in one place
                 </p>
               </div>
             </div>
