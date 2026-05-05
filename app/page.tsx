@@ -23,10 +23,7 @@ function ArrowIcon() {
 
 export default function Home() {
   // pick better featured products: top 3 by price (simple + not random)
-  const featuredProducts = [...products]
-    .map((p) => ({ ...p, amount: parsePrice(p.price) }))
-    .sort((a, b) => b.amount - a.amount)
-    .slice(0, 3);
+  const featuredProducts = products.slice(0, 3);
 
   return (
     <main className="page-transition space-y-12 sm:space-y-16">
