@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
 import { products } from "@/lib/products";
-import { BRAND_NAME, DISCORD_INVITE_URL, parsePrice } from "@/lib/site";
+import { BRAND_NAME, DISCORD_INVITE_URL } from "@/lib/site";
 
 function ArrowIcon() {
   return (
@@ -152,7 +152,6 @@ export default function Home() {
                 src="/server-icon.png"
                 className="h-14 w-14 rounded-2xl object-cover"
                 alt="server"
-                onError={(e) => (e.currentTarget.style.display = "none")}
               />
               <div>
                 <p className="text-2xl font-semibold tracking-tight text-white">
