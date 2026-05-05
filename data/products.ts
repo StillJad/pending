@@ -1,4 +1,26 @@
-export const products = [
+export const productCategories = [
+  "Discord",
+  "AI",
+  "Streaming",
+  "Gaming",
+  "Brawl Stars",
+] as const;
+
+export type ProductCategory = (typeof productCategories)[number];
+
+export type Product = {
+  id: number;
+  slug: string;
+  name: string;
+  duration: string;
+  price: number;
+  category: ProductCategory;
+  icon: string;
+  badge: string;
+  description: string;
+};
+
+export const products: Product[] = [
   // DISCORD
   {
     id: 1,
