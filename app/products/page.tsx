@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
-import {
-  BRAND_NAME,
-  parsePrice,
-} from "@/lib/site";
+import { productCategories, products } from "@/lib/products";
+import { parsePrice } from "@/lib/site";
 
 type ProductsPageProps = {
   searchParams: Promise<{
@@ -43,32 +40,41 @@ export default async function ProductsPage({
 
   const filteredProducts = query
     ? catalog.filter((product) =>
-       [
-  product.name,
-  product.description,
-  product.duration,
-  product.badge,
-]
+        [
+          product.name,
+          product.description,
+          product.duration,
+          product.badge,
+          product.category,
+        ]
           .join(" ")
           .toLowerCase()
           .includes(query)
       )
     : catalog;
 
+  const grouped = productCategories.reduce<Record<string, typeof filteredProducts>>(
+    (accumulator, category) => {
+      accumulator[category] = filteredProducts
+        .filter((product) => product.category === category)
+        .sort((left, right) => left.amount - right.amount);
+      return accumulator;
+    },
+    {}
+  );
+
   return (
     <main className="page-transition space-y-10">
       <section className="ui-panel relative overflow-hidden px-6 py-14 sm:px-10 sm:py-16">
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-        <div className="absolute left-16 top-10 h-52 w-52 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.10),transparent_68%)] blur-3xl" />
-        <div className="absolute right-14 top-16 h-56 w-56 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_68%)] blur-3xl" />
 
         <div className="relative z-10 text-center">
           <p className="ui-overline">Catalog</p>
           <h1 className="mt-4 text-5xl font-semibold tracking-[-0.08em] text-white sm:text-6xl">
-            The <span className="text-white">Goods</span>
+            Catalog
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/64">
-            Digital products, clean delivery, and support through Discord.
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/70">
+            Pick a category, then choose the item you need.
           </p>
 
           <form action="/products" className="mx-auto mt-10 max-w-4xl">
@@ -88,27 +94,6 @@ export default async function ProductsPage({
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-5xl gap-5 md:grid-cols-3">
-        <div className="ui-panel p-5">
-          <p className="ui-overline">Items</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight text-white">
-            {filteredProducts.length}
-          </p>
-        </div>
-        <div className="ui-panel p-5">
-          <p className="ui-overline">Categories</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight text-white">
-            {new Set(filteredProducts.map((product) => product.category)).size}
-          </p>
-        </div>
-        <div className="ui-panel p-5">
-          <p className="ui-overline">Brand</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight text-white">
-            {BRAND_NAME}
-          </p>
-        </div>
-      </section>
-
       {filteredProducts.length === 0 ? (
         <section className="ui-panel p-10 text-center">
           <p className="text-2xl font-semibold tracking-tight text-white">
@@ -124,11 +109,36 @@ export default async function ProductsPage({
           </div>
         </section>
       ) : (
-        <section className="mx-auto grid max-w-7xl gap-6 sm:grid-cols-2 xl:grid-cols-3">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </section>
+        <div className="space-y-12">
+          {productCategories.map((category) => {
+            const items = grouped[category];
+
+            if (!items?.length) {
+              return null;
+            }
+
+            return (
+              <section key={category} className="space-y-6">
+                <div className="border-b border-white/10 pb-3">
+                  <div className="flex items-end justify-between gap-4">
+                    <h2 className="text-2xl font-semibold tracking-tight text-white">
+                      {category}
+                    </h2>
+                    <span className="text-sm text-white/58">
+                      {items.length} item{items.length !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                  {items.map((product) => (
+                    <ProductCard key={product.id} product={product} />
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       )}
     </main>
   );
