@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { ProductCard } from "@/components/product-card";
-import { products } from "@/lib/products";
-import { BRAND_NAME, DISCORD_INVITE_URL } from "@/lib/site";
+import { DISCORD_INVITE_URL } from "@/lib/site";
 
 function ArrowIcon() {
   return (
@@ -21,167 +19,59 @@ function ArrowIcon() {
   );
 }
 
-export default function Home() {
-  // pick better featured products: top 3 by price (simple + not random)
-  const featuredProducts = products.slice(0, 3);
-
+function DiscordIcon() {
   return (
-    <main className="page-transition space-y-12 sm:space-y-16">
-      {/* HERO */}
-      <section className="ui-panel relative overflow-hidden px-6 py-16 sm:px-10 sm:py-20">
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/24 to-transparent" />
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="currentColor"
+    >
+      <path d="M20.32 4.37A19.8 19.8 0 0 0 15.36 2.8a.07.07 0 0 0-.08.04c-.21.38-.45.88-.62 1.27a18.27 18.27 0 0 0-5.49 0 12.64 12.64 0 0 0-.63-1.27.08.08 0 0 0-.08-.04 19.74 19.74 0 0 0-4.96 1.57.07.07 0 0 0-.03.03C.33 9.05-.32 13.58.1 18.06c0 .02.01.04.03.05a19.9 19.9 0 0 0 6.08 3.05.08.08 0 0 0 .08-.03c.47-.64.89-1.32 1.24-2.03a.08.08 0 0 0-.04-.1 13.1 13.1 0 0 1-1.9-.9.08.08 0 0 1-.01-.13l.37-.28a.07.07 0 0 1 .08 0c3.96 1.8 8.24 1.8 12.16 0a.07.07 0 0 1 .08 0l.38.28a.08.08 0 0 1-.01.13c-.6.35-1.24.65-1.9.9a.08.08 0 0 0-.04.1c.36.7.77 1.39 1.24 2.03a.08.08 0 0 0 .08.03 19.83 19.83 0 0 0 6.09-3.05.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.85-13.66a.06.06 0 0 0-.03-.03ZM8.02 15.33c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.96 2.42-2.16 2.42Zm7.97 0c-1.18 0-2.16-1.08-2.16-2.42 0-1.33.96-2.42 2.16-2.42 1.21 0 2.18 1.1 2.16 2.42 0 1.34-.95 2.42-2.16 2.42Z" />
+    </svg>
+  );
+}
 
-        <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <span className="pending-badge">
-            <span className="pending-dot" />
-            fast digital delivery
-          </span>
+export default function Home() {
+  return (
+    <main className="page-transition flex min-h-[calc(100vh-190px)] items-center justify-center px-4 py-20 sm:py-28">
+      <section className="relative mx-auto max-w-5xl text-center">
+        <div className="pointer-events-none absolute left-1/2 top-1/2 h-[460px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(255,255,255,0.08),transparent_65%)] blur-3xl" />
 
-          <h1 className="mx-auto mt-8 max-w-4xl text-5xl font-semibold tracking-[-0.08em] text-white sm:text-6xl lg:text-7xl">
-            Buy digital products
+        <div className="relative z-10">
+          <p className="mx-auto inline-flex items-center rounded-full border border-white/10 bg-black/45 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/70">
+            pending.cc
+          </p>
+
+          <h1 className="mx-auto mt-9 max-w-5xl text-5xl font-black tracking-[-0.08em] text-white sm:text-7xl lg:text-8xl">
+            Premium digital products,
             <br />
-            without getting scammed.
+            delivered through Discord.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
-            Real products, fast delivery, and support through Discord. No fake
-            promises, no weird checkout flows.
+          <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
+            A clean catalog for Discord, AI, streaming, gaming, and Brawl Stars products.
+            Pick what you need and continue from there.
           </p>
 
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-11 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href={DISCORD_INVITE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/[0.08] px-5 py-3 text-sm font-bold text-white shadow-[0_0_35px_rgba(255,255,255,0.06)] transition hover:bg-white/[0.12]"
+            >
+              <DiscordIcon />
+              Join Discord
+            </a>
+
             <Link
               href="/products"
-              className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm font-bold text-white/92 transition hover:bg-white/[0.09] hover:text-white"
             >
-              Browse products
+              View catalog
               <ArrowIcon />
             </Link>
-            <a
-              href={DISCORD_INVITE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
-            >
-              Join Discord
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section className="grid gap-5 sm:grid-cols-3">
-        {[
-          ["1. Browse", "Pick what you want from the catalog"],
-          ["2. Checkout", "Open checkout instantly on-site"],
-          ["3. Delivery", "Get everything through Discord"],
-        ].map(([title, desc]) => (
-          <div
-            key={title}
-            className="ui-panel p-5 text-center"
-          >
-            <p className="text-sm font-semibold text-white">{title}</p>
-            <p className="mt-2 text-sm text-white/65">{desc}</p>
-          </div>
-        ))}
-      </section>
-
-      {/* FEATURED */}
-      <section id="products" className="space-y-8">
-        <div className="text-center">
-          <p className="ui-overline ui-overline-accent">Catalog</p>
-          <h2 className="mt-4 text-4xl font-semibold tracking-[-0.07em] text-white sm:text-5xl">
-            Featured products
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-base text-white/68">
-            The most popular stuff people actually buy.
-          </p>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-3">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              ctaLabel="View product"
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* CTA / DISCORD */}
-      <section className="pending-cta grid gap-8 p-7 sm:p-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div>
-          <span className="pending-badge">
-            <span className="pending-dot" />
-            discord delivery
-          </span>
-
-          <h2 className="mt-8 text-4xl font-semibold tracking-[-0.07em] text-white sm:text-5xl">
-            Need help or delivery?
-          </h2>
-
-          <p className="mt-5 max-w-xl text-base leading-8 text-white/72">
-            Everything continues in Discord. Faster support, easier delivery,
-            no waiting.
-          </p>
-
-          <div className="mt-8">
-            <a
-              href={DISCORD_INVITE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl border border-white/15 bg-black px-5 py-3 text-sm font-semibold text-white transition hover:bg-black/80"
-            >
-              Join Discord
-            </a>
-          </div>
-        </div>
-
-        <div className="ui-panel relative overflow-hidden p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="h-3 w-3 rounded-full bg-white" />
-              <span className="h-3 w-3 rounded-full bg-white/20" />
-              <span className="h-3 w-3 rounded-full bg-white/20" />
-            </div>
-            <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold text-white">
-              discord.gg/pending
-            </span>
-          </div>
-
-          <div className="mt-8 flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <img
-                src="/server-icon.png"
-                className="h-14 w-14 rounded-2xl object-cover"
-                alt="server"
-              />
-              <div>
-                <p className="text-2xl font-semibold tracking-tight text-white">
-                  {BRAND_NAME}
-                </p>
-                <p className="mt-1 text-sm text-white/68">
-                  Orders, delivery, and support in one place
-                </p>
-              </div>
-            </div>
-
-            <a
-              href={DISCORD_INVITE_URL}
-              target="_blank"
-              rel="noreferrer"
-              className="rounded-2xl border border-white/15 bg-black px-4 py-2 text-sm font-semibold text-white transition hover:bg-black/80"
-            >
-              Join
-            </a>
-          </div>
-
-          <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 p-4">
-            <p className="text-sm font-semibold text-white">Order updates</p>
-            <p className="mt-2 text-sm leading-6 text-white/66">
-              Open a ticket for support, delivery progress, and anything that
-              needs manual follow-up.
-            </p>
           </div>
         </div>
       </section>
