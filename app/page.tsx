@@ -57,7 +57,7 @@ export default function Home() {
               href={DISCORD_INVITE_URL}
               target="_blank"
               rel="noreferrer"
-              className="ui-button-secondary"
+              className="rounded-2xl border border-white/15 bg-black/40 px-5 py-2 text-sm font-semibold text-white hover:bg-black/60"
             >
               Join Discord
             </a>
@@ -141,7 +141,7 @@ export default function Home() {
               <span className="h-3 w-3 rounded-full bg-white/20" />
               <span className="h-3 w-3 rounded-full bg-white/20" />
             </div>
-            <span className="rounded-full border border-white/15 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/90">
+            <span className="rounded-full border border-white/15 bg-black/40 px-3 py-1 text-xs font-semibold text-white">
               discord.gg/pending
             </span>
           </div>
@@ -173,7 +173,7 @@ export default function Home() {
             </a>
           </div>
 
-          <div className="mt-8 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+          <div className="mt-8 rounded-2xl border border-white/10 bg-black/40 p-4">
             <p className="text-sm font-semibold text-white">Order updates</p>
             <p className="mt-2 text-sm leading-6 text-white/66">
               Open a ticket for support, delivery progress, and anything that
