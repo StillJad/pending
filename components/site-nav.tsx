@@ -73,19 +73,22 @@ function LoginIcon() {
 
 function PendingLogo() {
   return (
-    <Link href="/" className="group flex items-center gap-3">
-      <div className="relative flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-white/[0.04] shadow-[0_0_28px_rgba(255,255,255,0.08)] transition group-hover:border-white/30 group-hover:bg-white/[0.07]">
+    <Link
+      href="/"
+      className="flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.07]"
+    >
+      <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/[0.08]">
         <img
           src="/server-icon.png"
           alt="Pending"
-          className="h-8 w-8 rounded-xl object-cover"
+          className="h-8 w-8 rounded-full object-cover"
           onError={(event) => {
             event.currentTarget.style.display = "none";
           }}
         />
-        <span className="absolute text-sm font-black tracking-tight text-white/90">P</span>
+        <span className="absolute text-xs font-bold text-white">P</span>
       </div>
-      <span className="text-lg font-black tracking-tight text-white">Pending</span>
+      <span className="text-sm font-semibold text-white">Pending</span>
     </Link>
   );
 }
@@ -95,9 +98,9 @@ export function SiteNav({ viewer }: SiteNavProps) {
   const loginHref = `/api/auth/discord?next=${encodeURIComponent(pathname)}`;
 
   return (
-    <div className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-6">
+    <div className="mx-auto flex w-fit max-w-full items-center gap-2 rounded-full border border-white/12 bg-black/35 px-2.5 py-2 shadow-[0_18px_55px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
       <PendingLogo />
-      <nav className="flex flex-wrap items-center gap-x-6 gap-y-2 text-sm font-semibold text-white/75 md:justify-center">
+      <nav className="flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.035] p-1">
         {NAV_LINKS.map((item) => {
           const active = isActive(pathname, item.href);
 
@@ -106,8 +109,10 @@ export function SiteNav({ viewer }: SiteNavProps) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`transition ${
-                active ? "text-white drop-shadow-[0_0_14px_rgba(255,255,255,0.22)]" : "text-white/72 hover:text-white"
+              className={`${
+                active
+                  ? "rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-black transition"
+                  : "rounded-full px-3 py-1.5 text-sm font-medium text-white/70 transition hover:bg-white/[0.08] hover:text-white"
               }`}
             >
               {item.label}
@@ -116,11 +121,11 @@ export function SiteNav({ viewer }: SiteNavProps) {
         })}
       </nav>
 
-      <div className="flex flex-wrap items-center gap-3 md:justify-end">
+      <div className="flex items-center gap-2">
         <Link
           href="/cart"
           aria-label="Cart"
-          className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/[0.06] text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.08)]"
+          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
         >
           <CartIcon />
         </Link>
@@ -129,7 +134,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
           href={DISCORD_INVITE_URL}
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white hover:shadow-[0_0_22px_rgba(255,255,255,0.08)]"
+          className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
         >
           <DiscordIcon />
           Discord
@@ -137,7 +142,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
 
         {viewer ? (
           <>
-            <div className="inline-flex items-center gap-3 rounded-2xl border border-white/12 bg-white/[0.06] px-3 py-2.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            <div className="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]">
               {viewer.avatar ? (
                 <img
                   src={viewer.avatar}
@@ -145,7 +150,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
                   className="h-8 w-8 rounded-full object-cover"
                 />
               ) : (
-                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white text-xs font-semibold text-black">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/[0.08] text-xs font-bold text-white">
                   {viewer.username.slice(0, 1).toUpperCase()}
                 </div>
               )}
@@ -156,7 +161,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
 
             <a
               href="/logout"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/15 bg-white/[0.06] px-5 py-3 text-sm font-semibold text-white/90 transition hover:border-white/30 hover:bg-white/[0.1] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
             >
               Logout
             </a>
@@ -164,7 +169,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
         ) : (
           <a
             href={loginHref}
-            className="inline-flex items-center gap-2 rounded-2xl border border-white/20 bg-white px-5 py-3 text-sm font-black text-black shadow-[0_0_28px_rgba(255,255,255,0.16)] transition hover:scale-[1.01] hover:bg-white/90 hover:shadow-[0_0_34px_rgba(255,255,255,0.22)]"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
           >
             <LoginIcon />
             Login
