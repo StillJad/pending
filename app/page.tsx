@@ -43,7 +43,7 @@ export default function Home() {
             without getting scammed.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-black/70 sm:text-lg">
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white/70 sm:text-lg">
             Real products, fast delivery, and support through Discord. No fake
             promises, no weird checkout flows.
           </p>
