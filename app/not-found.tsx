@@ -12,10 +12,16 @@ export default function NotFound() {
           The page is gone or the link is wrong.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
-          <Link href="/" className="ui-button-primary">
+          <Link
+            href="/"
+            className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-black/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/85"
+          >
             Back home
           </Link>
-          <Link href="/products" className="ui-button-secondary">
+          <Link
+            href="/products"
+            className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-black/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/85"
+          >
             Browse products
           </Link>
         </div>
