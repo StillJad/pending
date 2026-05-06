@@ -106,14 +106,14 @@ export function LoginAuthPanel({
             type="button"
             onClick={handleContinue}
             disabled={!turnstileToken || isSubmitting}
-            className="rounded-xl border border-white/15 bg-black/70 px-6 py-3 font-semibold text-white transition hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-black/70"
+            className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-white"
           >
             {isSubmitting ? "Checking..." : "Continue with Discord"}
           </button>
         ) : (
           <a
             href={directLoginHref}
-            className="rounded-xl border border-white/15 bg-black/70 px-6 py-3 font-semibold text-white transition hover:bg-black/85"
+            className="rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90"
           >
             Continue with Discord
           </a>
