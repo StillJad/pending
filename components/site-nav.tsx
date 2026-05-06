@@ -122,13 +122,13 @@ export function SiteNav({ viewer }: SiteNavProps) {
     >
       <PendingLogo compact={compact} />
 
-      <nav className="relative flex items-center gap-1 rounded-full border border-white/8 bg-white/[0.035] p-1">
+      <nav className="relative grid grid-cols-2 gap-1 rounded-full border border-white/8 bg-white/[0.035] p-1">
         {activeIndex >= 0 ? (
           <span
             aria-hidden="true"
             className="absolute inset-y-1 z-10 rounded-full border border-white/18 bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_0_24px_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{
-              width: `calc((100% - ${(NAV_LINKS.length - 1) * 0.25}rem) / ${NAV_LINKS.length})`,
+              width: "calc((100% - 0.25rem) / 2)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
             }}
           />
@@ -142,7 +142,7 @@ export function SiteNav({ viewer }: SiteNavProps) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`relative z-20 min-w-[82px] rounded-full px-3 py-1.5 text-center text-sm transition-colors duration-300 ${
+              className={`relative z-20 w-[124px] rounded-full px-3 py-1.5 text-center text-sm transition-colors duration-300 ${
                 active
                   ? "font-semibold !text-white"
                   : "font-medium !text-white/55 hover:!text-white"
