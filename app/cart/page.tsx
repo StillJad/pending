@@ -179,7 +179,10 @@ export default function CartPage() {
             </div>
 
             {feedback.kind === "success" ? (
-              <Link href="/orders" className="ui-button-secondary">
+              <Link
+                href="/orders"
+                className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-black/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/85"
+              >
                 Track order
               </Link>
             ) : null}
@@ -209,7 +212,10 @@ export default function CartPage() {
                   Browse the catalog and add something first.
                 </p>
                 <div className="mt-6">
-                  <Link href="/products" className="ui-button-primary">
+                  <Link
+                    href="/products"
+                    className="inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-black/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/85"
+                  >
                     Browse products
                   </Link>
                 </div>
@@ -319,7 +325,7 @@ export default function CartPage() {
 
             <button
               onClick={handlePlaceOrder}
-              className="ui-button-primary mt-8 w-full"
+              className="mt-8 inline-flex w-full items-center justify-center gap-3 rounded-xl border border-white/15 bg-black/70 px-6 py-3 text-sm font-semibold text-white transition hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-45"
               disabled={!cartItems.length || isSubmitting}
             >
               {isSubmitting ? "Creating order" : "Place order"}
