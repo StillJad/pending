@@ -79,15 +79,15 @@ function PendingLogo({ compact }: { compact: boolean }) {
       className="flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-semibold text-white transition hover:bg-white/[0.07]"
     >
       <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-white/[0.08]">
+        <span className="absolute text-xs font-bold text-white">P</span>
         <img
           src="/server-icon.png"
           alt="Pending"
-          className="h-8 w-8 rounded-full object-cover"
+          className="relative z-10 h-8 w-8 rounded-full object-cover"
           onError={(event) => {
             event.currentTarget.style.display = "none";
           }}
         />
-        <span className="absolute text-xs font-bold text-white">P</span>
       </div>
       <span
         className={`hidden text-sm font-semibold text-white transition-all duration-300 sm:inline ${
@@ -126,27 +126,13 @@ export function SiteNav({ viewer }: SiteNavProps) {
         {activeIndex >= 0 ? (
           <span
             aria-hidden="true"
-            className="absolute inset-y-1 rounded-full bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_0_28px_rgba(255,255,255,0.16)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="absolute inset-y-1 z-10 rounded-full border border-white/18 bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_0_24px_rgba(255,255,255,0.08)] backdrop-blur-md transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{
               width: `calc((100% - ${(NAV_LINKS.length - 1) * 0.25}rem) / ${NAV_LINKS.length})`,
               transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
-              filter: "url(#liquid-nav-goo)",
             }}
           />
         ) : null}
-
-        <svg className="pointer-events-none absolute h-0 w-0" aria-hidden="true">
-          <filter id="liquid-nav-goo">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur" />
-            <feColorMatrix
-              in="blur"
-              mode="matrix"
-              values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
-              result="goo"
-            />
-            <feBlend in="SourceGraphic" in2="goo" />
-          </filter>
-        </svg>
 
         {NAV_LINKS.map((item) => {
           const active = isActive(pathname, item.href);
@@ -156,10 +142,10 @@ export function SiteNav({ viewer }: SiteNavProps) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`relative z-10 min-w-[82px] rounded-full px-3 py-1.5 text-center text-sm transition-colors duration-300 ${
+              className={`relative z-20 min-w-[82px] rounded-full px-3 py-1.5 text-center text-sm transition-colors duration-300 ${
                 active
-                  ? "font-semibold text-black"
-                  : "font-medium text-white/72 hover:text-white"
+                  ? "font-semibold !text-white"
+                  : "font-medium !text-white/55 hover:!text-white"
               }`}
             >
               {item.label}
