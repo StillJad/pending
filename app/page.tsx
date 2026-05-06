@@ -48,7 +48,7 @@ export default function Home() {
           </h1>
 
           <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/62 sm:text-lg">
-            I NEED HELP BRUH NIGGER
+            Hi lol
           </p>
 
           <div className="mt-11 flex flex-wrap items-center justify-center gap-4">
