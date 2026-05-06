@@ -116,7 +116,7 @@ export default async function ProductsPage({
                   <a
                     key={category}
                     href={`#${category.toLowerCase().replaceAll(" ", "-")}`}
-                    className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-sm font-semibold text-white/72 transition hover:border-white/20 hover:bg-white/[0.075] hover:text-white"
+                    className="rounded-full border border-white/10 bg-black/45 px-3 py-1.5 text-sm font-semibold text-white/72 transition hover:border-white/20 hover:bg-black/60 hover:text-white"
                   >
                     {category}
                     <span className="ml-2 text-white/38">{count}</span>
@@ -142,7 +142,7 @@ export default async function ProductsPage({
             </form>
 
             <div className="mt-4 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-white/8 bg-white/[0.035] p-4">
+              <div className="rounded-2xl border border-white/8 bg-black/40 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
                   Items
                 </p>
@@ -150,7 +150,7 @@ export default async function ProductsPage({
                   {totalProducts}
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/8 bg-white/[0.035] p-4">
+              <div className="rounded-2xl border border-white/8 bg-black/40 p-4">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/42">
                   From
                 </p>
@@ -174,7 +174,7 @@ export default async function ProductsPage({
           <div className="mt-6">
             <Link
               href="/products"
-              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/[0.1]"
+              className="inline-flex items-center gap-2 rounded-2xl border border-white/10 bg-black/45 px-4 py-2 text-sm font-semibold text-white transition hover:bg-black/60"
             >
               Clear search
               <ArrowIcon />
