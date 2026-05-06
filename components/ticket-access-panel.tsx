@@ -73,7 +73,7 @@ export function TicketAccessPanel() {
         type="button"
         onClick={handleOpenTicket}
         disabled={!turnstileToken || isSubmitting}
-        className="mt-5 rounded-xl border border-white/15 bg-black/70 px-6 py-3 font-semibold text-white transition hover:bg-black/85 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-black/70"
+        className="mt-5 rounded-xl bg-white px-6 py-3 font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-45 disabled:hover:bg-white"
       >
         {isSubmitting ? "Checking..." : "Open Discord ticket"}
       </button>
